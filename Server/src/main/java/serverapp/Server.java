@@ -15,13 +15,13 @@ public class Server {
 
         try {
             ServerBootstrap b = new ServerBootstrap();
+            SqlWorker.connect();
             b.group(boss, work)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new AuthorizationHandler());
-//                                    new MainHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync();
