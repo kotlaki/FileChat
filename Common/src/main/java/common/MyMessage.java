@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ public class MyMessage {
 
     private State currentState = State.IDLE;
     private String myMessage;
+    private MyFile myFile = new MyFile();
     int msgLength;
     int receivedFileLength;
     private byte[] temp;
@@ -43,7 +45,7 @@ public class MyMessage {
          channel.writeAndFlush(buf);
     }
 
-    public String formReceiveMsg(ByteBuf buf) {
+    public String formReceiveMsg(ByteBuf buf) throws IOException {
         while (buf.readableBytes() > 0) {
             if (currentState == State.IDLE) {
                 byte readed = buf.readByte();
@@ -82,7 +84,7 @@ public class MyMessage {
         Arrays.fill(temp, (byte) 0);
 
         if (buf.readableBytes() == 0) {
-            System.out.println(buf.release());
+            buf.release();
         }
 
         return str;
