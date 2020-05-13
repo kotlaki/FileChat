@@ -12,15 +12,12 @@ import java.util.Arrays;
 public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Cannel activ in AuthorizationHandler.class");
-    }
-
-    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
         String str = in.toString(CharsetUtil.UTF_8);
+        System.out.println(str);
         String[] token = str.split(" ");
+        System.out.println(token.length);
         System.out.println(Arrays.toString(token));
         in.release();
     }
