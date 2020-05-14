@@ -1,11 +1,12 @@
 package serverapp;
 
-import common.MyMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
 
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
@@ -13,8 +14,7 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
-        MyMessage mess = new MyMessage();
-        String str = mess.formReceiveMsg(in);
+        String str = in.toString(CharsetUtil.UTF_8);
         System.out.println(str);
         String[] token = str.split(" ");
         System.out.println(Arrays.toString(token));

@@ -1,57 +1,26 @@
 package common;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-public class MyFile {
+public class MyFileReceive {
 
-    public enum State {
+    private enum State {
         IDLE, NAME_LENGTH, NAME, FILE_LENGTH, FILE
     }
 
-    private State currentState = State.IDLE;
-    private int nextLength;
-    private long fileLength;
-    private long receivedFileLength;
-    private BufferedOutputStream out;
+    private static State currentState = State.IDLE;
+    private static int nextLength;
+    private static long fileLength;
+    private static long receivedFileLength;
+    private static BufferedOutputStream out;
     int count = 0;
 
 
-
-    public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
-        FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
-
-        ByteBuf buf = null;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 25);
-        channel.write(buf);
-
-        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
-        buf.writeInt(filenameBytes.length);
-        channel.write(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
-        buf.writeBytes(filenameBytes);
-        channel.write(buf);
-
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
-        buf.writeLong(Files.size(path));
-        channel.write(buf);
-
-        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
-        if (finishListener != null) {
-            transferOperationFuture.addListener(finishListener);
-        }
-    }
-
-    public void reciveFile(ByteBuf buf) throws IOException {
+    public static void reciveFile(ByteBuf buf) throws IOException {
         while (buf.readableBytes() > 0) {
             if (currentState == State.IDLE) {
                 byte readed = buf.readByte();
@@ -93,7 +62,6 @@ public class MyFile {
                 while (buf.readableBytes() > 0) {
                     out.write(buf.readByte());
                     receivedFileLength++;
-//                    System.out.println(receivedFileLength);
                     if (fileLength == receivedFileLength) {
                         currentState = State.IDLE;
                         System.out.println("File received");

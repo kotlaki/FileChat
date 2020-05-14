@@ -1,15 +1,15 @@
 package clientapp;
 
-import common.MyFile;
-import common.MyMessage;
+import common.MyFileSend;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Chat {
-    private MyMessage myMsg;
 
     public Chat(String nickName, ChannelHandlerContext ctx) throws IOException {
         System.out.println("Hello " + nickName + "!!!");
@@ -18,13 +18,12 @@ public class Chat {
         String str = new String(scanner.nextLine());
 
         // запаковываем данные
-        MyMessage myMsg = new MyMessage(str);
-        myMsg.formSendMsg(ctx.channel());
+        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
 
         if (str.startsWith("/file")) {
             String[] token = str.split(" ");
             String pathToFile = token[1];
-            MyFile.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
+            MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
                 if (!future.isSuccess()) {
                     future.cause().printStackTrace();
                 }

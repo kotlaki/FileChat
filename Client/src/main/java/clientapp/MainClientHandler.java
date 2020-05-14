@@ -1,7 +1,7 @@
 package clientapp;
 
-import common.MyMessage;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
@@ -16,9 +16,7 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         System.out.print("Enter login and password: ");
         Scanner scanner = new Scanner(System.in);
         String str = new String("/auth " + scanner.nextLine());
-        // запаковываем данные
-        MyMessage myMsg = new MyMessage(str);
-        myMsg.formSendMsg(ctx.channel());
+        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
     @Override
