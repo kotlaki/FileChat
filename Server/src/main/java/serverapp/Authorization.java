@@ -15,7 +15,7 @@ public class Authorization {
                 } else {
                     System.out.println("User " + nickName + " good!");
                     isAuth = true;
-                    ctx.pipeline().addLast(new MainServerHandler(nickName));
+                    ctx.pipeline().addLast("msh", new MainServerHandler(nickName));
                     ctx.pipeline().remove("authorization");
                     ctx.fireChannelActive();
                 }

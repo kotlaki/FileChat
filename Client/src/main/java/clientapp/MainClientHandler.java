@@ -10,6 +10,8 @@ import java.util.Scanner;
 
 public class MainClientHandler extends ChannelInboundHandlerAdapter {
 
+    private Chat chat = new Chat();
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // блок отправки данных авторизации пользователя
@@ -22,10 +24,9 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // принимаем служебные данные от сервера
-        ByteBuf buf = (ByteBuf) msg;
-        String nickName = buf.toString(CharsetUtil.UTF_8);
-        buf.release();
-        new Chat(nickName, ctx);
+            ByteBuf buf = (ByteBuf) msg;
+//            String str = buf.toString(CharsetUtil.UTF_8);
+            chat.сhat(ctx, buf);
     }
 
     @Override

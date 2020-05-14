@@ -1,6 +1,8 @@
 package clientapp;
 
+import common.MyFileReceive;
 import common.MyFileSend;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
@@ -9,18 +11,41 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+/*
+    /fr - file receive - получение файла
+    /fs - file send - отправка файла
+ */
+
 public class Chat {
 
-    public Chat(String nickName, ChannelHandlerContext ctx) throws IOException {
-        System.out.println("Hello " + nickName + "!!!");
-        System.out.print("Enter message: ");
-        Scanner scanner = new Scanner(System.in);
-        String str = new String(scanner.nextLine());
+    private String prev = "";
+    private String test;
+    private String str;
 
-        // запаковываем данные
-        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+    public Chat() {
+    }
 
-        if (str.startsWith("/file")) {
+    public void сhat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+
+        if (!prev.equals("/fr")) {
+            System.out.print("Enter message: ");
+            Scanner scanner = new Scanner(System.in);
+            str = new String(scanner.nextLine());
+            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            test = buf.toString(CharsetUtil.UTF_8);
+        }
+        // блок принития файла с сервера
+        if(prev.equals("/fr")) {
+            MyFileReceive.receiveFile(buf);
+            prev = "";
+        }
+        if (str.startsWith("/fr")) {
+            prev = "/fr";
+        }
+
+
+        // блок отправки файла на сервер
+        if (str.startsWith("/fs")) {
             String[] token = str.split(" ");
             String pathToFile = token[1];
             MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
