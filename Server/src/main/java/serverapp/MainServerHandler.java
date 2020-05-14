@@ -21,7 +21,6 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // прошли авторизацию, сообщили клиенту отправкой служебного сообщения
-        System.out.println("User " + nickName + " good!");
         ctx.channel().writeAndFlush(Unpooled.copiedBuffer(nickName, CharsetUtil.UTF_8));
     }
 
@@ -35,7 +34,7 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
         }
         // т.к предидущая строка содержала /file то обрабатываем прием файла, после чего скидываем предидущий показатель на ""
         if(prev.equals("/file")) {
-            MyFileReceive.reciveFile(in);
+            MyFileReceive.receiveFile(in);
             prev = "";
         }
         // после получении строки проверяем начинается ли она с /file

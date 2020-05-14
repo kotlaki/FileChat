@@ -21,7 +21,7 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new AuthorizationHandler());
+                            ch.pipeline().addLast("authorization", new AuthorizationHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync();

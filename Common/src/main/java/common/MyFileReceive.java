@@ -20,7 +20,7 @@ public class MyFileReceive {
     int count = 0;
 
 
-    public static void reciveFile(ByteBuf buf) throws IOException {
+    public static void receiveFile(ByteBuf buf) throws IOException {
         while (buf.readableBytes() > 0) {
             if (currentState == State.IDLE) {
                 byte readed = buf.readByte();
