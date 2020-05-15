@@ -20,7 +20,7 @@ public class MyFileReceive {
     int count = 0;
 
 
-    public static void receiveFile(ByteBuf buf) throws IOException {
+    public static void receiveFile(ByteBuf buf, String paths) throws IOException {
         while (buf.readableBytes() > 0) {
             if (currentState == State.IDLE) {
                 byte readed = buf.readByte();
@@ -45,7 +45,7 @@ public class MyFileReceive {
                     byte[] fileName = new byte[nextLength];
                     buf.readBytes(fileName);
                     System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
-                    out = new BufferedOutputStream(new FileOutputStream("_" + new String(fileName)));
+                    out = new BufferedOutputStream(new FileOutputStream(paths + "_" + new String(fileName)));
                     currentState = State.FILE_LENGTH;
                 }
             }

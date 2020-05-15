@@ -42,7 +42,7 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
             System.out.println(nickName + " написал: " + str);
             if (str.startsWith("/fr")) {
                 String[] strSplit = str.split(" ");
-                MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel(), future -> {
+                MyFileSend.sendFile(Paths.get("server_storage/" + strSplit[1]), ctx.channel(), future -> {
                     if (!future.isSuccess()) {
                         future.cause().printStackTrace();
                     }
@@ -55,7 +55,7 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
         }
         // т.к предидущая строка содержала /file то обрабатываем прием файла, после чего скидываем предидущий показатель на ""
         if(prev.equals("/fs")) {
-            MyFileReceive.receiveFile(in);
+            MyFileReceive.receiveFile(in, "server_storage/");
             prev = "";
         }
         // после получении строки проверяем начинается ли она с /file

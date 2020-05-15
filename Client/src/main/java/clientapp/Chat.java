@@ -37,7 +37,7 @@ public class Chat {
         }
         // блок принития файла с сервера
         if(prev.equals("/fr")) {
-            MyFileReceive.receiveFile(buf);
+            MyFileReceive.receiveFile(buf, "client_storage/");
             prev = "";
         }
         if (str.startsWith("/fr")) {
@@ -48,7 +48,7 @@ public class Chat {
         // блок отправки файла на сервер
         if (str.startsWith("/fs")) {
             String[] token = str.split(" ");
-            String pathToFile = token[1];
+            String pathToFile = "client_storage/" + token[1];
             MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
                 if (!future.isSuccess()) {
                     future.cause().printStackTrace();
