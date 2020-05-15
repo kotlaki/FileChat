@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="200.0" prefWidth="193.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.ChatController">
+   <children>
+      <TextField fx:id="txtFieldLogin" alignment="CENTER" focusTraversable="false" layoutX="22.0" layoutY="44.0" promptText="login" text="voland" />
+      <Label alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="22.0" layoutY="6.0" prefHeight="38.0" prefWidth="149.0" text="FILE CHAT" textAlignment="CENTER" textFill="#6165b5">
+         <font>
+            <Font name="Times New Roman" size="28.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="txtFieldPassword" alignment="CENTER" focusTraversable="false" layoutX="22.0" layoutY="84.0" promptText="password" text="1" />
+      <Button fx:id="btnEnter" defaultButton="true" layoutX="72.0" layoutY="121.0" mnemonicParsing="false" onAction="#enter" text="Войти" />
+      <Button fx:id="btnRegistration" layoutX="54.0" layoutY="153.0" mnemonicParsing="false" onAction="#registration" text="Регистрация" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="178.0" prefHeight="17.0" prefWidth="173.0" text="Label" visible="false" />
+   </children>
+</AnchorPane>
