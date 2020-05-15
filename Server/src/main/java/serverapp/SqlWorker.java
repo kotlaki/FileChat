@@ -19,11 +19,14 @@ public class SqlWorker {
 
     public static String getNickByLoginAndPass(String login, String pass) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT nickname FROM user WHERE login = '" + login + "' and password = '" + pass +"'");
-            int myHash = pass.hashCode();
+            ResultSet rs = stmt.executeQuery("SELECT nickname, password FROM user WHERE login = '" + login + "'");
+            String myHash = String.valueOf(pass.hashCode());
             if (rs.next()) {
                 String nick = rs.getString(1);
-                return nick;
+                String dbHash = rs.getString(2);
+                if (myHash.equals(dbHash)) {
+                    return nick;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,13 +34,14 @@ public class SqlWorker {
         return null;
     }
 
-    public static String addUser(String login, String pass, String nick) {
+    public static String addUser(String login, String pass, String nick, String description) {
         try {
-            String query = "INSERT INTO user (login, password, nickname) VALUES (?, ?, ?);";
+            String query = "INSERT INTO user (login, password, nickname, description) VALUES (?, ?, ?, ?);";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, login);
-            ps.setInt(2, Integer.parseInt(pass));
+            ps.setString(2, String.valueOf(pass.hashCode()));
             ps.setString(3, nick);
+            ps.setString(4, description);
             ps.executeUpdate();
             return "Пользователь добавлен!!!";
         } catch (SQLException e) {

@@ -14,7 +14,8 @@ import java.util.Scanner;
 /*
     /fr - file receive - получение файла
     /fs - file send - отправка файла
- */
+    /reg login password nickname description - регистрация нового пользователя
+*/
 
 public class Chat {
 
