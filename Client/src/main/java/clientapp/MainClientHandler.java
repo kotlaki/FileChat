@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class MainClientHandler extends ChannelInboundHandlerAdapter {
@@ -15,10 +16,19 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // принимаем служебные данные от сервера
-        ByteBuf buf = (ByteBuf) msg;
-        String str = buf.toString(CharsetUtil.UTF_8);
-        System.out.println(str);
-        chat.сhat(ctx, buf);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ByteBuf buf = (ByteBuf) msg;
+                String str = buf.toString(CharsetUtil.UTF_8);
+                System.out.println(str);
+                try {
+                    chat.сhat(ctx, buf);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override

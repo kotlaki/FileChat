@@ -37,6 +37,11 @@ public class ChatController {
     public TextArea txtDescriptionReg;
     public Button btnRegistrationReg;
     public Label txtLabelReg;
+    // основной чат
+    public TextArea txtChatWindow;
+    public TextArea txtChatSend;
+    public Button btnSend;
+    public Button btnFileStorage;
 
     private boolean goRegister = false;
 
@@ -68,6 +73,24 @@ public class ChatController {
                     if (!goRegister) {
                         // шлем данные на авторизацию
                         Chat.authorization(f, txtFieldLogin.getText(), txtFieldPassword.getText());
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    workChat();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+//                        Task<Void> voidTask = new Task<Void>() {
+//                            @Override
+//                            protected Void call() throws Exception {
+//                                workChat();
+//                                return null;
+//                            }
+//                        };
+//                        new Thread(voidTask).start();
                     } else {
                         // шлем данные на регистрацию
                         Chat.registration(f, txtLoginReg.getText(), txtPassReg.getText(), txtNicknameReg.getText(), txtDescriptionReg.getText());
@@ -90,6 +113,17 @@ public class ChatController {
         new Thread(task).start();
     }
 
+    public void workChat() throws IOException {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chat.fxml"));
+                Parent root = fxmlLoader.load();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setOpacity(1);
+                stage.setTitle("Чат");
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+    }
+
     public void registration(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/registration.fxml"));
         Parent root = fxmlLoader.load();
@@ -105,4 +139,5 @@ public class ChatController {
         goRegister = true;
         enter();
     }
+
 }
