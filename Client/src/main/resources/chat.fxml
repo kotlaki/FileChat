@@ -11,5 +11,5 @@
    <Button defaultButton="true" layoutX="463.0" layoutY="311.0" mnemonicParsing="false" prefHeight="64.0"
            prefWidth="116.0" text="Send" fx:id="btnSend"/>
    <Button layoutX="463.0" layoutY="255.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="116.0"
-           text="File Storage" fx:id="btnFileStorage"/>
+           text="File Storage" fx:id="btnFileStorage" onAction="#fileStorage"/>
 </AnchorPane>

@@ -25,6 +25,7 @@ import java.nio.channels.Channel;
 
 public class ChatController {
     // вход
+    AnchorPane anchorePaneEnter;
     public TextField txtFieldLogin;
     public PasswordField txtFieldPassword;
     public Button btnEnter;
@@ -42,6 +43,12 @@ public class ChatController {
     public TextArea txtChatSend;
     public Button btnSend;
     public Button btnFileStorage;
+    // file storage
+    public ListView listServer;
+    public ListView listClient;
+    public Button btnBack;
+    public Button btnSendToServer;
+    public Button btnReceiveFromServer;
 
     private boolean goRegister = false;
 
@@ -83,14 +90,6 @@ public class ChatController {
                                 }
                             }
                         });
-//                        Task<Void> voidTask = new Task<Void>() {
-//                            @Override
-//                            protected Void call() throws Exception {
-//                                workChat();
-//                                return null;
-//                            }
-//                        };
-//                        new Thread(voidTask).start();
                     } else {
                         // шлем данные на регистрацию
                         Chat.registration(f, txtLoginReg.getText(), txtPassReg.getText(), txtNicknameReg.getText(), txtDescriptionReg.getText());
@@ -140,4 +139,19 @@ public class ChatController {
         enter();
     }
 
+    public void fileStorage(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fileExplorer.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setOpacity(1);
+        stage.setTitle("Хранилище файлов");
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+    }
+
+    public void closeWindow(ActionEvent actionEvent) {
+        Stage stage = (Stage) btnBack.getScene().getWindow();
+        stage.close();
+    }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.ChatController">
+    <children>
+        <ListView fx:id="listServer" layoutX="22.0" layoutY="14.0" prefHeight="333.0" prefWidth="226.0" />
+        <ListView fx:id="listClient" layoutX="349.0" layoutY="14.0" prefHeight="333.0" prefWidth="226.0" />
+        <Button fx:id="btnSendToServer" layoutX="282.0" layoutY="148.0" mnemonicParsing="false" text="&lt;&lt;" />
+        <Button fx:id="btnReceiveFromServer" layoutX="282.0" layoutY="181.0" mnemonicParsing="false" text="&gt;&gt;" />
+      <Button cancelButton="true" layoutX="274.0" layoutY="361.0" mnemonicParsing="false" text="Назад" fx:id="btnBack" onAction="#closeWindow"/>
+    </children>
+</AnchorPane>

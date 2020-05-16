@@ -29,14 +29,13 @@ public class Chat {
 
     public static void authorization(ChannelFuture ctx, String login, String password) {
         // блок отправки данных авторизации пользователя
-//        System.out.print("Enter login and password: ");
+        System.out.println();
         String str = new String("/auth" + " " + login + " " + password);
         ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
     public static void registration(ChannelFuture ctx, String login, String password, String nickName, String description) {
         // блок отправки данных регистрации пользователя
-//        System.out.print("Enter login and password: ");
         String str = new String("/auth /reg" + " " + login + " " + password + " " + nickName + " " + description);
         ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
