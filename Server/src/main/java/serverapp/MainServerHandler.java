@@ -1,5 +1,6 @@
 package serverapp;
 
+import common.MyCommandReceive;
 import common.MyFileReceive;
 import common.MyFileSend;
 import io.netty.buffer.ByteBuf;
@@ -35,34 +36,14 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        //TODO сделать отправку больших сообщений больше 1024 символа
         ByteBuf in = (ByteBuf) msg;
-        // обрабатываем первую отправку чтобы узнать наличие /file в строке
-        if (!prev.equals("/fs")) {
-            str = in.toString(CharsetUtil.UTF_8);
-            System.out.println(nickName + " написал: " + str);
-            if (str.startsWith("/fr")) {
-                String[] strSplit = str.split(" ");
-                MyFileSend.sendFile(Paths.get("server_storage/" + strSplit[1]), ctx.channel(), future -> {
-                    if (!future.isSuccess()) {
-                        future.cause().printStackTrace();
-                    }
+        byte firstByte = in.readByte();
+        if (firstByte == 77) {
+            in.readerIndex(0);
+            MyCommandReceive.receiveCommand(in);
+        }
 
-                    if (future.isSuccess()) {
-                        System.out.println("Файл успешно передан");
-                    }
-                });
-            }
-        }
-        // т.к предидущая строка содержала /file то обрабатываем прием файла, после чего скидываем предидущий показатель на ""
-        if(prev.equals("/fs")) {
-            MyFileReceive.receiveFile(in, "server_storage/");
-            prev = "";
-        }
-        // после получении строки проверяем начинается ли она с /file
-        if (str.startsWith("/fs")) {
-            // помечаем что предидущая строка содержала /file
-            prev = "/fs";
-        }
     }
 
     @Override

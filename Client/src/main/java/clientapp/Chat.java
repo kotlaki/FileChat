@@ -1,9 +1,9 @@
 package clientapp;
 
+import common.MyCommandSend;
 import common.MyFileReceive;
 import common.MyFileSend;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
@@ -26,17 +26,18 @@ public class Chat {
     public Chat() {
     }
 
-    public void сhat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+    public void chat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
 
         if (!prev.equals("/fr")) {
             System.out.print("Enter message: ");
             Scanner scanner = new Scanner(System.in);
             str = new String(scanner.nextLine());
-            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            MyCommandSend.sendCommand(str, ctx.channel());
             test = buf.toString(CharsetUtil.UTF_8);
         }
         // блок принития файла с сервера
-        if(prev.equals("/fr")) {
+        if (prev.equals("/fr")) {
             MyFileReceive.receiveFile(buf, "client_storage/");
             prev = "";
         }

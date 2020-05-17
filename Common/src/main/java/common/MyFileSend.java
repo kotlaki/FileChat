@@ -14,20 +14,24 @@ public class MyFileSend {
     public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
 
+        // сигнальный байт
         ByteBuf buf = null;
         buf = ByteBufAllocator.DEFAULT.directBuffer(1);
         buf.writeByte((byte) 25);
         channel.write(buf);
 
+        // длинна имени файла
         byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
         buf = ByteBufAllocator.DEFAULT.directBuffer(4);
         buf.writeInt(filenameBytes.length);
         channel.write(buf);
 
+        // имя файла
         buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
         buf.writeBytes(filenameBytes);
         channel.write(buf);
 
+        // размер файла
         buf = ByteBufAllocator.DEFAULT.directBuffer(8);
         buf.writeLong(Files.size(path));
         channel.write(buf);
