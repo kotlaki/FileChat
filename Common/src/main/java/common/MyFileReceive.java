@@ -5,14 +5,15 @@ import io.netty.buffer.ByteBuf;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class MyFileReceive {
 
-    private enum State {
+    public enum State {
         IDLE, NAME_LENGTH, NAME, FILE_LENGTH, FILE
     }
 
-    private static State currentState = State.IDLE;
+    public static State currentState = State.IDLE;
     private static int nextLength;
     private static long fileLength;
     private static long receivedFileLength;
@@ -22,13 +23,13 @@ public class MyFileReceive {
 
     public static void receiveFile(ByteBuf buf, String paths) throws IOException {
         while (buf.readableBytes() > 0) {
+            byte[] signal = "/file".getBytes();
+
             if (currentState == State.IDLE) {
-                byte readed = buf.readByte();
-                if (readed == (byte) 25) {
-                    currentState = State.NAME_LENGTH;
-                    receivedFileLength = 0L;
-                    System.out.println("STATE: Start file receiving");
-                }
+                currentState = State.NAME_LENGTH;
+                receivedFileLength = 0L;
+                System.out.println("STATE: Start file receiving");
+                buf.readerIndex(signal.length); // устанавливаем индекс чтения в конец сигнального массива байт
             }
 
 
@@ -44,7 +45,7 @@ public class MyFileReceive {
                 if (buf.readableBytes() >= nextLength) {
                     byte[] fileName = new byte[nextLength];
                     buf.readBytes(fileName);
-                    System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
+                    System.out.println("STATE: Filename received - _" + new String(fileName, StandardCharsets.UTF_8));
                     out = new BufferedOutputStream(new FileOutputStream(paths + "_" + new String(fileName)));
                     currentState = State.FILE_LENGTH;
                 }

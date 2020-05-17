@@ -12,10 +12,12 @@ public class MyCommandSend {
         byte[] msgBytes = msg.getBytes(StandardCharsets.UTF_8);
         int lengthMsg = msgBytes.length;
 
+
         // сигнальный байт
         ByteBuf buf = null;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 77);
+        byte[] flag = "/message".getBytes(StandardCharsets.UTF_8);     // [47, 109, 101, 115, 115, 97, 103, 101]
+        buf = ByteBufAllocator.DEFAULT.directBuffer(flag.length);
+        buf.writeBytes(flag);
         channel.write(buf);
 
         // шлем длинну сообщения

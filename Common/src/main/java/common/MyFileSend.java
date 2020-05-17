@@ -8,6 +8,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class MyFileSend {
 
@@ -16,8 +17,9 @@ public class MyFileSend {
 
         // сигнальный байт
         ByteBuf buf = null;
-        buf = ByteBufAllocator.DEFAULT.directBuffer(1);
-        buf.writeByte((byte) 25);
+        byte[] flag = "/file".getBytes(StandardCharsets.UTF_8);     // [47, 102, 105, 108, 101]
+        buf = ByteBufAllocator.DEFAULT.directBuffer(flag.length);
+        buf.writeBytes(flag);
         channel.write(buf);
 
         // длинна имени файла

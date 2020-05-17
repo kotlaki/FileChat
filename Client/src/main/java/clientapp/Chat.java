@@ -28,27 +28,14 @@ public class Chat {
 
     public void chat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
 
-        if (!prev.equals("/fr")) {
-            System.out.print("Enter message: ");
-            Scanner scanner = new Scanner(System.in);
-            str = new String(scanner.nextLine());
-//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
-            MyCommandSend.sendCommand(str, ctx.channel());
-            test = buf.toString(CharsetUtil.UTF_8);
-        }
-        // блок принития файла с сервера
-        if (prev.equals("/fr")) {
-            MyFileReceive.receiveFile(buf, "client_storage/");
-            prev = "";
-        }
-        if (str.startsWith("/fr")) {
-            prev = "/fr";
-        }
-
+        System.out.print("Enter message: ");
+        Scanner scanner = new Scanner(System.in);
+        str = new String(scanner.nextLine());
 
         // блок отправки файла на сервер
         if (str.startsWith("/fs")) {
             String[] token = str.split(" ");
+            str = "";
             String pathToFile = "client_storage/" + token[1];
             MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
                 if (!future.isSuccess()) {
@@ -60,5 +47,22 @@ public class Chat {
                 }
             });
         }
+
+        if (!prev.equals("/fr")) {
+//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            if (!str.equals("")) {
+                MyCommandSend.sendCommand(str, ctx.channel());
+                test = buf.toString(CharsetUtil.UTF_8);
+            }
+        }
+        // блок принития файла с сервера
+        if (prev.equals("/fr")) {
+            MyFileReceive.receiveFile(buf, "client_storage/");
+            prev = "";
+        }
+        if (str.startsWith("/fr")) {
+            prev = "/fr";
+        }
+
     }
 }
