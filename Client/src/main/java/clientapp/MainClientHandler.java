@@ -1,5 +1,6 @@
 package clientapp;
 
+import common.MyCommandSend;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,7 +19,8 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         System.out.print("Enter login and password: ");
         Scanner scanner = new Scanner(System.in);
         String str = new String("/auth " + scanner.nextLine());
-        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+        MyCommandSend.sendCommand(str, ctx.channel());
+//        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
     @Override

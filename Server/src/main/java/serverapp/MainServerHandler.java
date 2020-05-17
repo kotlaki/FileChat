@@ -45,27 +45,13 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf in = (ByteBuf) msg;
 
         if (checkFlag(in, "/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
-            System.out.println("count file = " + count++);
+//            System.out.println("count file = " + count++);
             MyFileReceive.receiveFile(in, "server_storage/");
         }
 
         if (in.isReadable() && checkFlag(in, "/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
-            MyCommandReceive.receiveCommand(in);
+            System.out.println(MyCommandReceive.receiveCommand(in));
         }
-
-
-//        if (firstByte == 25 || MyFileReceive.currentState == MyFileReceive.State.FILE && firstByte != 88) {
-//            System.out.println("count file = " + count++);
-//            in.readerIndex(0);
-//            MyFileReceive.receiveFile(in, "server_storage/");
-//        }
-
-//        if (firstByte == 88 || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE &&
-//                MyFileReceive.currentState != MyFileReceive.State.FILE) {
-//            in.readerIndex(0);
-//            MyCommandReceive.receiveCommand(in);
-//        }
-
     }
 
     @Override
@@ -79,7 +65,6 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
         byte[] firstByte = new byte[signal.length];
         in.readBytes(firstByte);
         int count = 0;
-        System.out.println("serv hand = " + Arrays.toString(firstByte));
         for (int i = 0; i < signal.length; i++) {
             if (signal[i] == firstByte[i]) {
                 count++;

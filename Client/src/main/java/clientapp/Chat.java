@@ -48,13 +48,14 @@ public class Chat {
             });
         }
 
+        // блок отправки сообщений
         if (!prev.equals("/fr")) {
-//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
             if (!str.equals("")) {
                 MyCommandSend.sendCommand(str, ctx.channel());
                 test = buf.toString(CharsetUtil.UTF_8);
             }
         }
+
         // блок принития файла с сервера
         if (prev.equals("/fr")) {
             MyFileReceive.receiveFile(buf, "client_storage/");
