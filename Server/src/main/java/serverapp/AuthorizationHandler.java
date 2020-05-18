@@ -14,6 +14,7 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
         try {
             ByteBuf in = (ByteBuf) msg;
             String str = in.toString(CharsetUtil.UTF_8);
+            System.out.println("AuthoHandl = " + str);
             if (str.startsWith("/auth /reg")) {
                 ctx.channel().writeAndFlush(Unpooled.copiedBuffer(Authorization.addUser(str, ctx), CharsetUtil.UTF_8));
             } else {

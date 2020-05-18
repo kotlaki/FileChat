@@ -10,24 +10,24 @@ import java.util.Scanner;
 
 public class MainClientHandler extends ChannelInboundHandlerAdapter {
 
-    private Chat chat = new Chat();
+    private Controller controller = new Controller();
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // блок отправки данных авторизации пользователя
-        System.out.print("Enter login and password: ");
-        Scanner scanner = new Scanner(System.in);
-        String str = new String("/auth " + scanner.nextLine());
-        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
-    }
+//    @Override
+//    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+//        // блок отправки данных авторизации пользователя
+//        System.out.print("Enter login and password: ");
+//        Scanner scanner = new Scanner(System.in);
+//        String str = new String("/auth " + scanner.nextLine());
+//        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+//    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // принимаем служебные данные от сервера
         ByteBuf buf = (ByteBuf) msg;
         String str = buf.toString(CharsetUtil.UTF_8);
-        System.out.println(str);
-        chat.chat(ctx, buf, str);
+//        System.out.println(str);
+        controller.chat(ctx, buf, str);
     }
 
     @Override
