@@ -26,9 +26,13 @@ public class Chat {
     public Chat() {
     }
 
-    public void сhat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+    public void chat(ChannelHandlerContext ctx, ByteBuf buf, String str) throws IOException {
 
         if (!prev.equals("/fr")) {
+            if(str.startsWith("/close")) {
+                System.out.println("Закрываем канал!!!");
+                ctx.close();
+            }
             System.out.print("Enter message: ");
             Scanner scanner = new Scanner(System.in);
             str = new String(scanner.nextLine());

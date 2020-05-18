@@ -27,7 +27,7 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         String str = buf.toString(CharsetUtil.UTF_8);
         System.out.println(str);
-        chat.сhat(ctx, buf);
+        chat.chat(ctx, buf, str);
     }
 
     @Override

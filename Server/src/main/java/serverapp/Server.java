@@ -8,7 +8,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.util.Vector;
+
 public class Server {
+    public static Vector<Worker> clients = new Vector<>();
     public void run() {
         EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup work = new NioEventLoopGroup();
@@ -25,6 +28,7 @@ public class Server {
                         }
                     });
             ChannelFuture f = b.bind(8189).sync();
+//            clients = new Vector<>();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -32,5 +36,14 @@ public class Server {
             work.shutdownGracefully();
             boss.shutdownGracefully();
         }
+    }
+
+    public static void subscribe(Worker client) {
+        clients.add(client);
+    }
+
+    public static void unsubscribe(Worker client) {
+        clients.remove(client);
+//        broadcastClientsList();
     }
 }

@@ -18,6 +18,7 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
                 ctx.channel().writeAndFlush(Unpooled.copiedBuffer(Authorization.addUser(str, ctx), CharsetUtil.UTF_8));
             } else {
                 Authorization.checkUser(str, ctx);
+
             }
         } finally {
             ReferenceCountUtil.release(msg);

@@ -5,21 +5,37 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 public class Authorization {
-    public static boolean isAuth = false;
+    public static boolean isAuth;
+    public static boolean equalsNick = false;
+
     public static void checkUser(String str, ChannelHandlerContext ctx) {
+        isAuth = false;
         String[] token = str.split(" ");
         if (str.startsWith("/auth")) {
             try {
                 String nickName = SqlWorker.getNickByLoginAndPass(token[1], token[2]);
+
                 if (nickName == null) {
                     System.out.println("Не верные данные авторизации пользователя!!!");
                     ctx.channel().writeAndFlush(Unpooled.copiedBuffer("Не верные данные авторизации " +
                             "пользователя!!! Проверте логин и пароль...", CharsetUtil.UTF_8));
                     ctx.close();
                 } else {
+                    // пользователь с таким ником уже вошел?
+                    for (Worker o: Server.clients) {
+                        if (o.getNickName().equals(nickName)) {
+                            equalsNick = true;
+                            System.out.println("Повторный вход пользователя!!!");
+                            ctx.channel().writeAndFlush(Unpooled.copiedBuffer("/close", CharsetUtil.UTF_8));
+                            break;
+                        }
+                    }
                     System.out.println("User, " + nickName + ", register!");
-                    isAuth = true;
-                    ctx.pipeline().addLast("msh", new MainServerHandler(nickName));
+                    if (!equalsNick) {
+                        isAuth = true;
+                    }
+                    equalsNick = false;
+                    ctx.pipeline().addLast("msh", new MainServerHandler(nickName, ctx, isAuth));
                     ctx.pipeline().remove("authorization");
                     ctx.fireChannelActive();
                 }
