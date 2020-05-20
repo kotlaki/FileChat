@@ -9,9 +9,11 @@ package clientapp;
 import common.MyCommandSend;
 import common.MyFileSend;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -19,20 +21,25 @@ import io.netty.util.CharsetUtil;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ResourceBundle;
 
-public class Controller extends Application {
+public class Controller extends Application implements Initializable {
 
     public TextArea txtChat;
     public TextArea txtSend;
@@ -40,9 +47,10 @@ public class Controller extends Application {
     public TextField txtLogin;
     public PasswordField txtPassword;
     public Button btnSend;
+    public Button btnRegistration;
 
-    private Channel currentChannel;
-    public static Controller currentController; // хранит ссылку на текущий контроллер
+    public static Channel currentChannel;
+    public static Controller controller; // хранит ссылку на текущий контроллер
 
     private boolean isAuthorized;
     private static String nickName;
@@ -59,32 +67,35 @@ public class Controller extends Application {
         primaryStage.setTitle("Чат");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        currentController = loader.getController(); // узнаем ссылку на текущий контроллер
+//        currentController = loader.getController(); // узнаем ссылку на текущий контроллер
     }
 
-//    @Override
-//    public void init() throws Exception {
-//        setAuthorized(false);
-//    }
-//
-//    public void setAuthorized(boolean isAuthorized) {
-//        this.isAuthorized = isAuthorized;
-//        if (!isAuthorized) {
-//            txtChat.setVisible(false);
-//            txtSend.setVisible(false);
-//            txtLogin.setVisible(true);
-//            txtPassword.setVisible(true);
-//            btnEnter.setVisible(true);
-//            btnSend.setVisible(false);
-//        } else {
-//            txtChat.setVisible(true);
-//            txtSend.setVisible(true);
-//            txtLogin.setVisible(true);
-//            txtPassword.setVisible(true);
-//            btnEnter.setVisible(true);
-//            btnSend.setVisible(true);
-//        }
-//    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setAuthorized(false);
+    }
+
+    public void setAuthorized(boolean isAuthorized) {
+
+        if (!isAuthorized) {
+            txtChat.setVisible(false);
+            txtSend.setVisible(false);
+            txtLogin.setVisible(true);
+            txtPassword.setVisible(true);
+            btnEnter.setVisible(true);
+            btnSend.setVisible(false);
+            btnRegistration.setVisible(true);
+        } else {
+            txtChat.setVisible(true);
+            txtSend.setVisible(true);
+            txtLogin.setVisible(false);
+            txtPassword.setVisible(false);
+            btnEnter.setVisible(false);
+            btnSend.setVisible(true);
+            btnRegistration.setVisible(false);
+
+        }
+    }
 
     public void connect() {
         EventLoopGroup work = new NioEventLoopGroup();
@@ -98,13 +109,14 @@ public class Controller extends Application {
                         .handler(new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast(new ClientInboundHandler());
+                                ch.pipeline().addLast(new ClientHandler());
                                 currentChannel = ch;
                                 System.out.println(currentChannel);
                             }
                         });
                 ChannelFuture f = b.connect().sync();
                 authorization(f, txtLogin.getText(), txtPassword.getText());
+                setAuthorized(true);
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -116,7 +128,7 @@ public class Controller extends Application {
                 }
             }
         });
-        thread.setDaemon(true);
+//        thread.setDaemon(true);
         thread.start();
     }
 
@@ -126,10 +138,20 @@ public class Controller extends Application {
         MyCommandSend.sendCommand(str, ctx.channel());
     }
 
-    public static void registration(ChannelFuture ctx, String login, String password, String nickName, String description) throws IOException {
+    public void btnRegistration() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/registration.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene(root1));
+        stage.show();
+        connect();
+    }
+
+    public static void registration(Channel channel, String login, String password, String nickName, String description) throws IOException {
         // блок отправки данных регистрации пользователя
         String str = new String("/auth /reg" + " " + login + " " + password + " " + nickName + " " + description);
-        MyCommandSend.sendCommand(str, ctx.channel());
+        MyCommandSend.sendCommand(str, channel);
 //        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
@@ -180,5 +202,6 @@ public class Controller extends Application {
         txtChat.appendText(txtSend.getText() + "\n");
         txtSend.clear();
     }
+
 
 }

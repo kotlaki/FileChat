@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="215.0" prefWidth="177.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.ControllerRegistration">
+   <children>
+      <PasswordField fx:id="pswConfirmReg" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="112.0" promptText="Подтвердите пароль" />
+      <PasswordField fx:id="pswEnterReg" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="80.0" promptText="Введите пароль" />
+      <TextField fx:id="txtLoginReg" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="14.0" promptText="Введите логин" />
+      <TextField fx:id="txtNickReg" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="47.0" promptText="Введите ник" />
+      <Button fx:id="btnEndReg" layoutX="24.0" layoutY="144.0" mnemonicParsing="false" text="Зарегистрироваться" onAction="#regNewUser"/>
+      <Button fx:id="btnCancelReg" defaultButton="true" layoutX="54.0" layoutY="179.0" mnemonicParsing="false" text="Отмена" />
+   </children>
+</AnchorPane>
