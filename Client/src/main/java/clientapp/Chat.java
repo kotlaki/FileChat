@@ -1,9 +1,10 @@
 package clientapp;
 
 import common.MyCommandSend;
-import common.MyFileReceive;
 import common.MyFileSend;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
@@ -26,44 +27,41 @@ public class Chat {
     public Chat() {
     }
 
-    public void chat(ChannelHandlerContext ctx, ByteBuf buf) throws IOException {
+    public void chat(ChannelHandlerContext ctx) throws IOException {
 
         System.out.print("Enter message: ");
         Scanner scanner = new Scanner(System.in);
         str = new String(scanner.nextLine());
 
-        // блок отправки файла на сервер
-        if (str.startsWith("/fs")) {
-            String[] token = str.split(" ");
-            str = "";
-            String pathToFile = "client_storage/" + token[1];
-            MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
-                if (!future.isSuccess()) {
-                    future.cause().printStackTrace();
-                }
+        if (!str.equals("")) {
 
-                if (future.isSuccess()) {
-                    System.out.println("Файл успешно передан");
-                }
-            });
-        }
+            // блок отправки файла на сервер
+            if (str.startsWith("/fs")) {
+                String[] token = str.split(" ");
+                String pathToFile = "client_storage/" + token[1];
+                MyFileSend.sendFile(Paths.get(pathToFile), ctx.channel(), future -> {
+                    if (!future.isSuccess()) {
+                        future.cause().printStackTrace();
+                    }
 
-        // блок отправки сообщений
-        if (!prev.equals("/fr")) {
-            if (!str.equals("")) {
-                MyCommandSend.sendCommand(str, ctx.channel());
-                test = buf.toString(CharsetUtil.UTF_8);
+                    if (future.isSuccess()) {
+                        System.out.println("Файл успешно передан");
+                    }
+                });
+            } else
+                // блок отправки сообщений
+            if (str.startsWith("/fr")) {
+                ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            } else {
+                // отправляем обычные сообщения
+                sendMsg(str, ctx.channel());
             }
+
         }
 
-        // блок принития файла с сервера
-        if (prev.equals("/fr")) {
-            MyFileReceive.receiveFile(buf, "client_storage/");
-            prev = "";
-        }
-        if (str.startsWith("/fr")) {
-            prev = "/fr";
-        }
+    }
 
+    public void sendMsg(String str, Channel channel) throws IOException {
+        MyCommandSend.sendCommand(str, channel);
     }
 }

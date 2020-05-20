@@ -1,12 +1,14 @@
 package clientapp;
 
 import common.MyCommandSend;
+import common.MyFileReceive;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class MainClientHandler extends ChannelInboundHandlerAdapter {
@@ -20,7 +22,6 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         Scanner scanner = new Scanner(System.in);
         String str = new String("/auth " + scanner.nextLine());
         MyCommandSend.sendCommand(str, ctx.channel());
-//        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
     @Override
@@ -28,8 +29,14 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         // принимаем служебные данные от сервера
         ByteBuf buf = (ByteBuf) msg;
         String str = buf.toString(CharsetUtil.UTF_8);
-        System.out.println(str);
-        chat.chat(ctx, buf);
+//        System.out.println("hh = " + str);
+        if (str.startsWith("/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
+            MyFileReceive.receiveFile(buf, "client_storage/");
+        }
+//        System.out.println(str);
+        if (MyFileReceive.currentState != MyFileReceive.State.FILE) {
+            chat.chat(ctx);
+        }
     }
 
     @Override
