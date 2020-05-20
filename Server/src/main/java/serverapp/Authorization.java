@@ -1,8 +1,11 @@
 package serverapp;
 
+import common.MyCommandSend;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
+
+import java.io.IOException;
 
 public class Authorization {
     public static boolean isAuth = false;
@@ -13,8 +16,8 @@ public class Authorization {
                 String nickName = SqlWorker.getNickByLoginAndPass(token[1], token[2]);
                 if (nickName == null) {
                     System.out.println("Не верные данные авторизации пользователя!!!");
-                    ctx.channel().writeAndFlush(Unpooled.copiedBuffer("Не верные данные авторизации " +
-                            "пользователя!!! Проверте логин и пароль...", CharsetUtil.UTF_8));
+                    MyCommandSend.sendCommand("Не верные данные авторизации " +
+                            "пользователя!!! Проверте логин и пароль...", ctx.channel());
                     ctx.close();
                 } else {
                     System.out.println("User, " + nickName + ", register!");
@@ -23,7 +26,7 @@ public class Authorization {
                     ctx.pipeline().remove("authorization");
                     ctx.fireChannelActive();
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (ArrayIndexOutOfBoundsException | IOException e) {
                 System.out.println("Пользователь ввел не верный логин и пароль!!!");
                 ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
                         "Проверьте правильность ввода логина и пароля!!!", CharsetUtil.UTF_8));

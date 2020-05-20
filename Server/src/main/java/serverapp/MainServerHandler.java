@@ -70,8 +70,6 @@ public class MainServerHandler extends ChannelInboundHandlerAdapter {
         if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
             String message = MyCommandReceive.receiveCommand(in);
             System.out.println("From client = " + message);
-
-
         }
     }
 

@@ -3,16 +3,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.Controller">
     <children>
-        <TextArea layoutX="14.0" layoutY="14.0" prefHeight="146.0" prefWidth="331.0" fx:id="txtChat" />
-        <TextArea layoutX="14.0" layoutY="172.0" prefHeight="136.0" prefWidth="331.0" fx:id="txtSend" />
-        <Button layoutX="180.0" layoutY="352.0" mnemonicParsing="false" text="Войти" fx:id="btnEnter" onAction="#btnEnter"/>
-        <TextField layoutX="14.0" layoutY="320.0" text="voland" fx:id="txtLogin"/>
-        <PasswordField layoutX="14.0" layoutY="352.0" text="1" fx:id="txtPassword" />
+        <TextArea fx:id="txtChat" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="146.0" prefWidth="331.0" />
+        <TextArea fx:id="txtSend" layoutX="14.0" layoutY="172.0" prefHeight="136.0" prefWidth="331.0" />
+        <Button fx:id="btnEnter" layoutX="180.0" layoutY="352.0" mnemonicParsing="false" onAction="#btnEnter" text="Войти" />
+        <TextField fx:id="txtLogin" layoutX="14.0" layoutY="320.0" text="voland" />
+        <PasswordField fx:id="txtPassword" layoutX="14.0" layoutY="352.0" text="1" />
         <ListView layoutX="379.0" layoutY="14.0" prefHeight="293.0" prefWidth="200.0" />
-        <Button layoutX="263.0" layoutY="320.0" mnemonicParsing="false" text="Отправить" fx:id="btnSend" onAction="#btnSend"/>
+        <Button fx:id="btnSend" defaultButton="true" layoutX="263.0" layoutY="320.0" mnemonicParsing="false" onAction="#btnSend" text="Отправить" />
     </children>
 </AnchorPane>
-

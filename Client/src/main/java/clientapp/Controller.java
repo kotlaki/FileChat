@@ -1,5 +1,11 @@
 package clientapp;
 
+  /*
+    /fr - file receive - получение файла
+    /fs - file send - отправка файла
+    /reg login password nickname description - регистрация нового пользователя
+*/
+
 import common.MyCommandSend;
 import common.MyFileSend;
 import io.netty.bootstrap.Bootstrap;
@@ -34,17 +40,12 @@ public class Controller extends Application {
     public TextField txtLogin;
     public PasswordField txtPassword;
     public Button btnSend;
-    private String prev = "";
-    private String test;
-    private String str;
-    private boolean isAuthorized;
-    private Channel currentChannel;
-    private ChannelHandlerContext ctx;
-    private ByteBuf in;
-    private String inMsg;
 
-    public Controller() {
-    }
+    private Channel currentChannel;
+    public static Controller currentController; // хранит ссылку на текущий контроллер
+
+    private boolean isAuthorized;
+    private static String nickName;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -53,11 +54,12 @@ public class Controller extends Application {
         Controller controller = loader.getController();
         loader.setLocation(urlFxml);
         Parent root = loader.load();
-//        primaryStage.resizableProperty().setValue(false);
+        primaryStage.resizableProperty().setValue(false);
         primaryStage.resizableProperty().setValue(false);
         primaryStage.setTitle("Чат");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        currentController = loader.getController(); // узнаем ссылку на текущий контроллер
     }
 
 //    @Override
@@ -120,10 +122,8 @@ public class Controller extends Application {
 
     public static void authorization(ChannelFuture ctx, String login, String password) throws IOException {
         // блок отправки данных авторизации пользователя
-        System.out.println();
         String str = new String("/auth" + " " + login + " " + password);
         MyCommandSend.sendCommand(str, ctx.channel());
-//        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
     public static void registration(ChannelFuture ctx, String login, String password, String nickName, String description) throws IOException {
@@ -133,13 +133,13 @@ public class Controller extends Application {
 //        ctx.channel().writeAndFlush(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
     }
 
-    public void chat(ChannelHandlerContext ctx, ByteBuf buf, String str) throws IOException {
-        this.ctx = ctx;
-        this.in = buf;
-        this.inMsg = str;
-//        System.out.println("CHAT = " + str);
-
-    }
+//    public void chat(ChannelHandlerContext ctx, ByteBuf buf, String str) throws IOException {
+//        this.ctx = ctx;
+//        this.in = buf;
+//        this.inMsg = str;
+////        System.out.println("CHAT = " + str);
+//
+//    }
 
     public void sendMsg(String msg) throws IOException {
         if (!msg.equals("")) {
@@ -151,10 +151,12 @@ public class Controller extends Application {
                 MyFileSend.sendFile(Paths.get(pathToFile), currentChannel, future -> {
                     if (!future.isSuccess()) {
                         future.cause().printStackTrace();
+                        txtChat.appendText("Произошла ошибка при передаче файла!!!\n");
                     }
 
                     if (future.isSuccess()) {
-                        System.out.println("Файл успешно передан");
+                        System.out.println("Файл успешно передан...");
+                        txtChat.appendText("Файл успешно передан\n");
                     }
                 });
             } else
@@ -163,7 +165,7 @@ public class Controller extends Application {
                     currentChannel.writeAndFlush(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
                 } else {
                     // отправляем обычные сообщения
-                    sendMsg(msg, currentChannel);
+                    MyCommandSend.sendCommand(msg, currentChannel);
                 }
 
         }
@@ -173,22 +175,10 @@ public class Controller extends Application {
         connect();
     }
 
-    public void sendMsg(String str, Channel channel) throws IOException {
-        MyCommandSend.sendCommand(str, channel);
-    }
-
     public void btnSend() throws IOException {
         sendMsg(txtSend.getText());
         txtChat.appendText(txtSend.getText() + "\n");
         txtSend.clear();
     }
-
-
-    /*
-    /fr - file receive - получение файла
-    /fs - file send - отправка файла
-    /reg login password nickname description - регистрация нового пользователя
-*/
-
 
 }

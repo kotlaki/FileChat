@@ -29,7 +29,7 @@ public class MyCommandReceive {
             if (currentState == State.MESSAGE_LENGTH) {
                 if (buf.readableBytes() >= 4) {
                     msgLength = buf.readInt();
-                    System.out.println("STATE: File length received - " + msgLength);
+                    System.out.println("STATE: Message length received - " + msgLength);
                     currentState = State.MESSAGE;
                 }
             }
