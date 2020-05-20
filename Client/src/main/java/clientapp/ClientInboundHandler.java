@@ -11,18 +11,9 @@ import io.netty.util.CharsetUtil;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-public class MainClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientInboundHandler extends ChannelInboundHandlerAdapter {
 
-    private Chat chat = new Chat();
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // блок отправки данных авторизации пользователя
-        System.out.print("Enter login and password: ");
-        Scanner scanner = new Scanner(System.in);
-        String str = new String("/auth " + scanner.nextLine());
-        MyCommandSend.sendCommand(str, ctx.channel());
-    }
+    private Controller controller = new Controller();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -35,7 +26,7 @@ public class MainClientHandler extends ChannelInboundHandlerAdapter {
         }
 //        System.out.println(str);
         if (MyFileReceive.currentState != MyFileReceive.State.FILE) {
-            chat.chat(ctx);
+            controller.chat(ctx, buf, str);
         }
     }
 
