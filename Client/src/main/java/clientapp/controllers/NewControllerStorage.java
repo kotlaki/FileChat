@@ -2,6 +2,7 @@ package clientapp.controllers;
 
 import common.MyCommandSend;
 import common.MyFileList;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,11 +16,13 @@ import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 public class NewControllerStorage implements Initializable {
     public ListView<String> listFileClient;
@@ -27,14 +30,17 @@ public class NewControllerStorage implements Initializable {
     public Button btnCancelStorage;
     public Button btnLeftToRight;
     public Button btnRightToLeft;
+    public Button btnRefreshFile;
     public ProgressBar progressBar;
 
     public List<String> fileList = new ArrayList<>();
-    public String msgFromServer;
+    public static String msgFromServer;
+//    public static NewControllerStorage testController;
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
         fxmlLoaderRegistration.setLocation(getClass().getResource("/new/storage.fxml"));
+//        testController = fxmlLoaderRegistration.getController();
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);
@@ -79,14 +85,32 @@ public class NewControllerStorage implements Initializable {
         listFileClient.setItems(files);
     }
 
-    public void refreshListServer() {
-        String[] strSplit = msgFromServer.split(" ");
-        ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(strSplit));
-        listFileServer.setItems(files);
+    public void refreshListServer() throws IOException {
+        Platform.runLater(() -> {
+            // сплитим полученный массив
+            String[] strSplit = msgFromServer.split(" ");
+//            IntStream.range(0, strSplit.length)
+//                    .filter(i -> i != 0)
+//                    .map(i -> Integer.parseInt(strSplit[i]))
+//                    .toArray();
+//            System.out.println(Arrays.toString(strSplit));
+           // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
+            String[] result = new String[strSplit.length - 1];
+            for (int i = 1; i < strSplit.length; i++) {
+                result[i - 1] = strSplit[i];
+            }
+            ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
+            listFileServer.setItems(files);
+        });
     }
 
     public void requestListServer() throws IOException {
         MyCommandSend.sendCommand("/req_list", NewController.currentChannel);
     }
 
+    public void refreshFile(ActionEvent actionEvent) throws IOException {
+        refreshListClient();
+        requestListServer();
+        refreshListServer();
+    }
 }

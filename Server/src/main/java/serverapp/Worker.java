@@ -59,7 +59,7 @@ public class Worker {
                 if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                     String message = MyCommandReceive.receiveCommand(in);
                     if (message.equals("/req_list")) {
-                        MyCommandSend.sendCommand(preSplit(), this.ctx.channel());
+                        MyCommandSend.sendCommand("/req_list " + preSplit(), this.ctx.channel());
                     }
                     System.out.println("From client = " + message);
                 }

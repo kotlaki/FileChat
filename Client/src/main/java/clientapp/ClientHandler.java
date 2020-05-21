@@ -26,7 +26,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                 String message = MyCommandReceive.receiveCommand(buf);
                 System.out.println("From server = " + message);
-                // TO DO от сюда надо передать строку в NewControllerStorage
+                if (message.startsWith("/req_list")) {
+                    // TO DO от сюда надо передать строку в NewControllerStorage
+                    NewControllerStorage.msgFromServer = message;
+                }
             }
     }
 
