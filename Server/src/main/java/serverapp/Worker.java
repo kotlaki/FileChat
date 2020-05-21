@@ -1,8 +1,6 @@
 package serverapp;
 
-import common.MyCommandReceive;
-import common.MyFileReceive;
-import common.MyFileSend;
+import common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +8,7 @@ import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class Worker {
 
@@ -59,7 +58,19 @@ public class Worker {
                 // приемка сообщений
                 if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                     String message = MyCommandReceive.receiveCommand(in);
+                    if (message.equals("/req_list")) {
+                        MyCommandSend.sendCommand(preSplit(), this.ctx.channel());
+                    }
                     System.out.println("From client = " + message);
                 }
+    }
+
+    public String preSplit() throws IOException {
+        StringBuilder listSB = new StringBuilder();
+        List<String> tmpList = MyFileList.listFile("server_storage");
+        for (String o: tmpList) {
+            listSB.append(o).append(" ");
+        }
+        return listSB.toString();
     }
 }

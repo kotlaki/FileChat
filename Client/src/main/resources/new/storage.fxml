@@ -6,8 +6,8 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.NewControllerStorage">
    <children>
-      <ListView layoutY="8.0" prefHeight="359.0" prefWidth="269.0" fx:id="listFileLeft"/>
-      <ListView layoutX="338.0" layoutY="8.0" prefHeight="359.0" prefWidth="269.0" fx:id="listFileRight"/>
+      <ListView layoutY="8.0" prefHeight="359.0" prefWidth="269.0" fx:id="listFileClient"/>
+      <ListView layoutX="338.0" layoutY="8.0" prefHeight="359.0" prefWidth="269.0" fx:id="listFileServer"/>
       <Button layoutX="274.0" layoutY="367.0" mnemonicParsing="false" text="Отмена" fx:id="btnCancelStorage" onAction="#cancelStorage"/>
       <Button layoutX="287.0" layoutY="153.0" mnemonicParsing="false" text="&gt;&gt;" fx:id="btnLeftToRight" onAction="#sendFileToServer"/>
       <Button layoutX="287.0" layoutY="187.0" mnemonicParsing="false" text="&lt;&lt;" fx:id="btnRightToLeft" onAction="#receiveFileFromServer"/>

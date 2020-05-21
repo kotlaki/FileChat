@@ -1,5 +1,6 @@
 package clientapp;
 
+import clientapp.controllers.NewControllerStorage;
 import common.MyCommandReceive;
 import common.MyFileReceive;
 import io.netty.buffer.ByteBuf;
@@ -7,7 +8,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
+import java.util.Arrays;
+
 public class ClientHandler extends ChannelInboundHandlerAdapter {
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -21,7 +25,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             // приемка сообщений
             if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                 String message = MyCommandReceive.receiveCommand(buf);
-                System.out.println("From client = " + message);
+                System.out.println("From server = " + message);
+                // TO DO от сюда надо передать строку в NewControllerStorage
             }
     }
 
