@@ -144,7 +144,7 @@ public class Controller extends Application implements Initializable {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(root1));
-        stage.show();
+        stage.showAndWait();
         connect();
     }
 
