@@ -2,6 +2,9 @@ package clientapp.controllers;
 
 import common.MyCommandSend;
 import common.MyFileList;
+import common.MyFileSend;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,13 +19,12 @@ import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
 
 public class NewControllerStorage implements Initializable {
     public ListView<String> listFileClient;
@@ -35,12 +37,12 @@ public class NewControllerStorage implements Initializable {
 
     public List<String> fileList = new ArrayList<>();
     public static String msgFromServer;
-//    public static NewControllerStorage testController;
+    public String getNameFileToServer;
+    public String getNameFileFromServer;
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
         fxmlLoaderRegistration.setLocation(getClass().getResource("/new/storage.fxml"));
-//        testController = fxmlLoaderRegistration.getController();
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);
@@ -62,15 +64,21 @@ public class NewControllerStorage implements Initializable {
     }
 
     public void sendFileToServer(ActionEvent actionEvent) throws IOException {
-//        ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile());
-//        listFileClient.setItems(files);
-//        listFileClient.refresh();
+        MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), NewController.currentChannel, future -> {
+            if (!future.isSuccess()) {
+                future.cause().printStackTrace();
+//                txtChat.appendText("Произошла ошибка при передаче файла!!!\n");
+            }
 
-//        listFileClient.getSelectionModel().selectIndices(1, 2);
-//        listFileClient.getFocusModel().focus(1);
+            if (future.isSuccess()) {
+                System.out.println("Файл успешно передан...");
+//                txtChat.appendText("Файл успешно передан\n");
+            }
+        });
     }
 
     public void receiveFileFromServer(ActionEvent actionEvent) {
+        NewController.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr Opera_setup.exe", CharsetUtil.UTF_8));
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -83,6 +91,10 @@ public class NewControllerStorage implements Initializable {
         // вытаскиваем в ListView данные из List и выводим
         ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile("client_storage"));
         listFileClient.setItems(files);
+        // устанавливаем фокус на первый элемент в списке
+        listFileClient.getFocusModel().focus(1);
+        getNameFileToServer = listFileClient.focusModelProperty().getValue().getFocusedItem();
+            System.out.println("to Storage = " + listFileClient.focusModelProperty().getValue().getFocusedItem());
     }
 
     public void refreshListServer() throws IOException {
@@ -100,7 +112,13 @@ public class NewControllerStorage implements Initializable {
                 result[i - 1] = strSplit[i];
             }
             ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
+//            files.sorted();
             listFileServer.setItems(files);
+            listFileClient.getFocusModel().focus(1);
+            getNameFileFromServer = listFileServer.focusModelProperty().getValue().getFocusedItem();
+            System.out.println("to Storage from server = " + listFileServer.focusModelProperty().getValue().getFocusedItem());
+
+//            System.out.println(files.get(0));
         });
     }
 
@@ -112,5 +130,6 @@ public class NewControllerStorage implements Initializable {
         refreshListClient();
         requestListServer();
         refreshListServer();
+
     }
 }
