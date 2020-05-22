@@ -6,7 +6,10 @@ import common.MyFileSend;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -67,18 +70,16 @@ public class NewControllerStorage implements Initializable {
         MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), NewController.currentChannel, future -> {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
-//                txtChat.appendText("Произошла ошибка при передаче файла!!!\n");
             }
 
             if (future.isSuccess()) {
                 System.out.println("Файл успешно передан...");
-//                txtChat.appendText("Файл успешно передан\n");
             }
         });
     }
 
     public void receiveFileFromServer(ActionEvent actionEvent) {
-        NewController.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr Opera_setup.exe", CharsetUtil.UTF_8));
+        NewController.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -94,31 +95,41 @@ public class NewControllerStorage implements Initializable {
         // устанавливаем фокус на первый элемент в списке
         listFileClient.getFocusModel().focus(1);
         getNameFileToServer = listFileClient.focusModelProperty().getValue().getFocusedItem();
-            System.out.println("to Storage = " + listFileClient.focusModelProperty().getValue().getFocusedItem());
+        // отслеживаем и вытаскиваем название имени файла при его выделении в списке
+        listFileClient.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                System.out.println("to Storage from client = " + newValue);
+                getNameFileToServer = newValue;
+            }
+        });
     }
 
     public void refreshListServer() throws IOException {
-        Platform.runLater(() -> {
-            // сплитим полученный массив
-            String[] strSplit = msgFromServer.split(" ");
-//            IntStream.range(0, strSplit.length)
+        //            IntStream.range(0, strSplit.length)
 //                    .filter(i -> i != 0)
 //                    .map(i -> Integer.parseInt(strSplit[i]))
 //                    .toArray();
 //            System.out.println(Arrays.toString(strSplit));
+        Platform.runLater(() -> {
+            // сплитим полученный массив
+            String[] strSplit = msgFromServer.split(" ");
            // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
             String[] result = new String[strSplit.length - 1];
             for (int i = 1; i < strSplit.length; i++) {
                 result[i - 1] = strSplit[i];
             }
             ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
-//            files.sorted();
             listFileServer.setItems(files);
-            listFileClient.getFocusModel().focus(1);
-            getNameFileFromServer = listFileServer.focusModelProperty().getValue().getFocusedItem();
-            System.out.println("to Storage from server = " + listFileServer.focusModelProperty().getValue().getFocusedItem());
 
-//            System.out.println(files.get(0));
+            // отслеживаем и вытаскиваем название имени файла при его выделении в списке
+            listFileServer.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    System.out.println("to Storage from server = " + newValue);
+                    getNameFileFromServer = newValue;
+                }
+            });
         });
     }
 
