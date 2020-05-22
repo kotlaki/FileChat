@@ -39,7 +39,7 @@ public class Worker {
 
         String str = in.toString(CharsetUtil.UTF_8);
 
-        // обработка запроса на файл
+        // обработка запроса на файл с последующей передачей файла клиенту
         if (str.startsWith("/fr")) {
             String[] strSplit = str.split(" ");
             MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel(), future -> {
@@ -65,6 +65,7 @@ public class Worker {
                 }
     }
 
+    // составляем строку списка файлов для отправки клиенту
     public String preSplit() throws IOException {
         StringBuilder listSB = new StringBuilder();
         List<String> tmpList = MyFileList.listFile("server_storage");

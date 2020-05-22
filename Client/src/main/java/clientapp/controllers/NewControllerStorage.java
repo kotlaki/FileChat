@@ -2,6 +2,7 @@ package clientapp.controllers;
 
 import common.MyCommandSend;
 import common.MyFileList;
+import common.MyFileReceive;
 import common.MyFileSend;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
@@ -9,7 +10,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -37,11 +37,16 @@ public class NewControllerStorage implements Initializable {
     public Button btnRightToLeft;
     public Button btnRefreshFile;
     public ProgressBar progressBar;
+    public Button btnDeleteFile;
+    public Button btnRenameFile;
+
 
     public List<String> fileList = new ArrayList<>();
     public static String msgFromServer;
     public String getNameFileToServer;
     public String getNameFileFromServer;
+
+    MyFileReceive myFileReceive;
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
@@ -66,7 +71,7 @@ public class NewControllerStorage implements Initializable {
         }
     }
 
-    public void sendFileToServer(ActionEvent actionEvent) throws IOException {
+    public void sendFileToServer(ActionEvent actionEvent) throws IOException, InterruptedException {
         MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), NewController.currentChannel, future -> {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
@@ -78,8 +83,11 @@ public class NewControllerStorage implements Initializable {
         });
     }
 
-    public void receiveFileFromServer(ActionEvent actionEvent) {
+    public void receiveFileFromServer(ActionEvent actionEvent) throws IOException, InterruptedException {
         NewController.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+        // тормозим поток для обновления списка файлов
+        Thread.sleep(100);
+        refreshListClient();
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -93,8 +101,7 @@ public class NewControllerStorage implements Initializable {
         ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile("client_storage"));
         listFileClient.setItems(files);
         // устанавливаем фокус на первый элемент в списке
-        listFileClient.getFocusModel().focus(1);
-        getNameFileToServer = listFileClient.focusModelProperty().getValue().getFocusedItem();
+        listFileClient.getFocusModel().focus(0);
         // отслеживаем и вытаскиваем название имени файла при его выделении в списке
         listFileClient.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -123,12 +130,9 @@ public class NewControllerStorage implements Initializable {
             listFileServer.setItems(files);
 
             // отслеживаем и вытаскиваем название имени файла при его выделении в списке
-            listFileServer.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    System.out.println("to Storage from server = " + newValue);
-                    getNameFileFromServer = newValue;
-                }
+            listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                System.out.println("to Storage from server = " + newValue);
+                getNameFileFromServer = newValue;
             });
         });
     }
@@ -140,7 +144,11 @@ public class NewControllerStorage implements Initializable {
     public void refreshFile(ActionEvent actionEvent) throws IOException {
         refreshListClient();
         requestListServer();
-        refreshListServer();
+    }
 
+    public void renameFile(ActionEvent actionEvent) {
+    }
+
+    public void deleteFile(ActionEvent actionEvent) {
     }
 }
