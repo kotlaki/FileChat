@@ -25,9 +25,9 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-public class NewController extends Application {
+public class Controller extends Application {
 
-    public NewController linkController;
+    public Controller linkController;
     public Stage pStage;
 
     public TextField txtLoginEnter;
@@ -41,7 +41,7 @@ public class NewController extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("/new/enter.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/enter.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         primaryStage.setTitle("Вход");
@@ -100,7 +100,7 @@ public class NewController extends Application {
     public void btnEnter(ActionEvent actionEvent) throws IOException {
         connect();
         pStage.close();
-        new NewControllerChat().run();
+        new ControllerChat().run();
     }
 
     public static void authorization(ChannelFuture ctx, String login, String password) throws IOException {
@@ -111,7 +111,7 @@ public class NewController extends Application {
 
     public void registrationNewUser(ActionEvent actionEvent) throws IOException, InterruptedException {
         pStage.hide();      // прячем окно авторизации
-        new NewControllerRegistration().run();  // запускаем контроллер для регистрации нового пользователя
+        new ControllerRegistration().run();  // запускаем контроллер для регистрации нового пользователя
         pStage.show();
     }
 }

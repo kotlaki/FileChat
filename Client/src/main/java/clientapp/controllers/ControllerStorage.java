@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NewControllerStorage implements Initializable {
+public class ControllerStorage implements Initializable {
     public ListView<String> listFileClient;
     public ListView<String> listFileServer;
     public Button btnCancelStorage;
@@ -50,7 +50,7 @@ public class NewControllerStorage implements Initializable {
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
-        fxmlLoaderRegistration.setLocation(getClass().getResource("/new/storage.fxml"));
+        fxmlLoaderRegistration.setLocation(getClass().getResource("/storage.fxml"));
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);
@@ -72,7 +72,7 @@ public class NewControllerStorage implements Initializable {
     }
 
     public void sendFileToServer(ActionEvent actionEvent) throws IOException, InterruptedException {
-        MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), NewController.currentChannel, future -> {
+        MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), Controller.currentChannel, future -> {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
             }
@@ -84,7 +84,7 @@ public class NewControllerStorage implements Initializable {
     }
 
     public void receiveFileFromServer(ActionEvent actionEvent) throws IOException, InterruptedException {
-        NewController.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+        Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
         // тормозим поток для обновления списка файлов
         Thread.sleep(100);
         refreshListClient();
@@ -138,7 +138,7 @@ public class NewControllerStorage implements Initializable {
     }
 
     public void requestListServer() throws IOException {
-        MyCommandSend.sendCommand("/req_list", NewController.currentChannel);
+        MyCommandSend.sendCommand("/req_list", Controller.currentChannel);
     }
 
     public void refreshFile(ActionEvent actionEvent) throws IOException {

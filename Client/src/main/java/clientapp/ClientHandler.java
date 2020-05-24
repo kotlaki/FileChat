@@ -1,14 +1,12 @@
 package clientapp;
 
-import clientapp.controllers.NewControllerStorage;
+import clientapp.controllers.ControllerStorage;
 import common.MyCommandReceive;
 import common.MyFileReceive;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
-
-import java.util.Arrays;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -28,7 +26,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("From server = " + message);
                 if (message.startsWith("/req_list")) {
                     // TO DO от сюда надо передать строку в NewControllerStorage
-                    NewControllerStorage.msgFromServer = message;
+                    ControllerStorage.msgFromServer = message;
                 }
             }
     }

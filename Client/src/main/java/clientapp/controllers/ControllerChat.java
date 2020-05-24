@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class NewControllerChat {
+public class ControllerChat {
     public TextArea txtMsgSend;
     public TextArea txtChat;
     public Button btnMsgSend;
@@ -19,7 +19,7 @@ public class NewControllerChat {
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
-        fxmlLoaderRegistration.setLocation(getClass().getResource("/new/chat.fxml"));
+        fxmlLoaderRegistration.setLocation(getClass().getResource("/chat.fxml"));
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);
@@ -33,12 +33,12 @@ public class NewControllerChat {
     }
 
     public void openStorage(ActionEvent actionEvent) throws IOException {
-        new NewControllerStorage().run();
+        new ControllerStorage().run();
     }
 
     public void exitChat(ActionEvent actionEvent) {
         // закрываем канал
-        NewController.currentChannel.close();
+        Controller.currentChannel.close();
         // закрываем текущее окно
         Stage stage = (Stage) btnExitChat.getScene().getWindow();
         stage.close();

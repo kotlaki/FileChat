@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class NewControllerRegistration {
+public class ControllerRegistration {
 
     public TextField txtNickRegistration;
     public TextField txtLoginRegistration;
@@ -25,7 +25,7 @@ public class NewControllerRegistration {
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
-        fxmlLoaderRegistration.setLocation(getClass().getResource("/new/registration.fxml"));
+        fxmlLoaderRegistration.setLocation(getClass().getResource("/registration.fxml"));
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);

@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="411.0" prefWidth="510.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.NewControllerChat">
+<AnchorPane prefHeight="411.0" prefWidth="510.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.ControllerChat">
    <children>
       <TextArea fx:id="txtMsgSend" editable="false" focusTraversable="false" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="481.0" />
       <TextArea fx:id="txtChat" layoutX="14.0" layoutY="227.0" prefHeight="175.0" prefWidth="385.0" />
