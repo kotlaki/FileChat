@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class ControllerStorage implements Initializable {
     public Button btnRefreshFile;
     public ProgressBar progressBar;
     public Button btnDeleteFile;
-    public Button btnRenameFile;
+    public Button btnRemoveFile;
 
 
     public List<String> fileList = new ArrayList<>();
@@ -67,7 +68,7 @@ public class ControllerStorage implements Initializable {
         }
     }
 
-    public void sendFileToServer(ActionEvent actionEvent) throws IOException, InterruptedException {
+    public void sendFileToServer() throws IOException, InterruptedException {
 
         MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel, future -> {
             if (!future.isSuccess()) {
@@ -76,6 +77,10 @@ public class ControllerStorage implements Initializable {
 
             if (future.isSuccess()) {
                 System.out.println("Файл успешно передан...");
+
+                progressBar.progressProperty().set(1);
+                Thread.sleep(1000);
+                progressBar.progressProperty().setValue(0);
             }
         });
     }
@@ -84,6 +89,10 @@ public class ControllerStorage implements Initializable {
         Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
         // как только получаем полностью файл вызывается обновление списков файлов с помощью callback
         Controller.linkController.setCallbackReceive(this::refreshFile);
+
+        progressBar.progressProperty().set(1);
+        Thread.sleep(1000);
+        progressBar.progressProperty().setValue(0);
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -104,6 +113,7 @@ public class ControllerStorage implements Initializable {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 System.out.println("to Storage from client = " + newValue);
                 getNameFileToServer = newValue;
+                getNameFileFromServer = null;
             }
         });
     }
@@ -129,6 +139,7 @@ public class ControllerStorage implements Initializable {
             listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 System.out.println("to Storage from server = " + newValue);
                 getNameFileFromServer = newValue;
+                getNameFileToServer = null;
             });
         });
     }
@@ -145,9 +156,39 @@ public class ControllerStorage implements Initializable {
         });
     }
 
-    public void renameFile(ActionEvent actionEvent) {
+    public void removeFile(ActionEvent actionEvent) throws IOException, InterruptedException {
+        // переносим файл с клиента на сервер
+        if (getNameFileToServer != null) {
+            MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel, future -> {
+                if (!future.isSuccess()) {
+                    future.cause().printStackTrace();
+                }
+
+                if (future.isSuccess()) {
+                    System.out.println("Файл успешно передан...");
+
+                    progressBar.progressProperty().set(1);
+                    Thread.sleep(1000);
+                    progressBar.progressProperty().setValue(0);
+                    deleteFile();
+                }
+            });
+        }
+        // переносим файл с сервера на клиента
+        if (getNameFileFromServer != null) {
+            Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+            Controller.linkController.setCallbackReceive(this::deleteFile);
+        }
     }
 
-    public void deleteFile(ActionEvent actionEvent) {
+    public void deleteFile() throws IOException {
+        // выясняем где удалить файл, на сервере или локально на клиенте
+        if (getNameFileFromServer != null) {
+            MyCommandSend.sendCommand("/delete " + getNameFileFromServer, Controller.currentChannel);
+        }
+        if (getNameFileToServer != null) {
+            Files.delete(Paths.get("client_storage/" + getNameFileToServer));
+            refreshFile();
+        }
     }
 }

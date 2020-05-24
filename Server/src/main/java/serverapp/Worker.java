@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -60,6 +61,11 @@ public class Worker {
                     String message = MyCommandReceive.receiveCommand(in);
                     if (message.equals("/req_list")) {
                         MyCommandSend.sendCommand("/req_list " + preSplit(), this.ctx.channel());
+                    }
+                    if (message.startsWith("/delete")) {
+                        String[] strSplit = message.split(" ");
+                        Files.delete(Paths.get("server_storage/" + strSplit[1]));
+                        System.out.println("Файл " + strSplit[1] + " удален пользователем " + nickName + "!!!");
                     }
                     System.out.println("From client = " + message);
                 }
