@@ -1,9 +1,6 @@
 package clientapp.controllers;
 
-import common.MyCommandSend;
-import common.MyFileList;
-import common.MyFileReceive;
-import common.MyFileSend;
+import common.*;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import javafx.application.Platform;
@@ -47,6 +44,7 @@ public class ControllerStorage implements Initializable {
     public String getNameFileFromServer;
 
     MyFileReceive myFileReceive;
+    Callback callback;
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
@@ -63,16 +61,15 @@ public class ControllerStorage implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            refreshListClient();
-            requestListServer();
-            refreshListServer();
+            refreshFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void sendFileToServer(ActionEvent actionEvent) throws IOException, InterruptedException {
-        MyFileSend.sendFile(Paths.get("client_storage/"+ getNameFileToServer), Controller.currentChannel, future -> {
+
+        MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel, future -> {
             if (!future.isSuccess()) {
                 future.cause().printStackTrace();
             }
@@ -85,9 +82,8 @@ public class ControllerStorage implements Initializable {
 
     public void receiveFileFromServer(ActionEvent actionEvent) throws IOException, InterruptedException {
         Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
-        // тормозим поток для обновления списка файлов
-        Thread.sleep(100);
-        refreshListClient();
+        // как только получаем полностью файл вызывается обновление списков файлов с помощью callback
+        Controller.linkController.setCallbackReceive(this::refreshFile);
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -121,7 +117,7 @@ public class ControllerStorage implements Initializable {
         Platform.runLater(() -> {
             // сплитим полученный массив
             String[] strSplit = msgFromServer.split(" ");
-           // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
+            // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
             String[] result = new String[strSplit.length - 1];
             for (int i = 1; i < strSplit.length; i++) {
                 result[i - 1] = strSplit[i];
@@ -141,9 +137,12 @@ public class ControllerStorage implements Initializable {
         MyCommandSend.sendCommand("/req_list", Controller.currentChannel);
     }
 
-    public void refreshFile(ActionEvent actionEvent) throws IOException {
-        refreshListClient();
-        requestListServer();
+    public void refreshFile() throws IOException {
+        requestListServer();    // посылаем запрос на список файлов и ждем получения
+        Controller.linkController.setCallbackReceive(() -> {      // при получении списка файлов с сервера обновляем списки в приложении
+            refreshListServer();
+            refreshListClient();
+        });
     }
 
     public void renameFile(ActionEvent actionEvent) {

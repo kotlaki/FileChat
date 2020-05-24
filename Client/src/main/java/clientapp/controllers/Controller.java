@@ -1,6 +1,7 @@
 package clientapp.controllers;
 
 import clientapp.ClientHandler;
+import common.Callback;
 import common.MyCommandSend;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -27,7 +28,7 @@ import java.net.InetSocketAddress;
 
 public class Controller extends Application {
 
-    public Controller linkController;
+    public static Controller linkController;
     public Stage pStage;
 
     public TextField txtLoginEnter;
@@ -37,6 +38,10 @@ public class Controller extends Application {
 
     public static Channel currentChannel;
 
+
+    public void setCallbackReceive(Callback callbackReceive) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackReceived(callbackReceive);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -54,6 +59,7 @@ public class Controller extends Application {
         // сеттером передаем primaryStage для использования вне метода start()
         linkController.setpStage(primaryStage);
     }
+
 
     public Stage getpStage() {
         return pStage;
