@@ -1,7 +1,9 @@
 package clientapp;
 
+import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerStorage;
 import common.Callback;
+import common.CallbackAuth;
 import common.MyCommandReceive;
 import common.MyFileReceive;
 import io.netty.buffer.ByteBuf;
@@ -18,6 +20,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public void setCallbackReceived(Callback callbackReceived) {
         this.callbackReceived = callbackReceived;
+    }
+
+    public CallbackAuth callbackAuth;
+
+    public void setCallbackAuth(CallbackAuth callbackAuth) {
+        this.callbackAuth = callbackAuth;
     }
 
     @Override
@@ -48,6 +56,29 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                             ControllerStorage.msgFromServer = message;
                         });
                     }
+                }
+                if (message.startsWith("/authOK")) {
+                    System.out.println("AUTH OK!!!");
+                    String[] strSplit = message.split(" ");
+                    Controller.nick = strSplit[1];
+                    Platform.runLater(()-> {
+                        try {
+                            callbackAuth.callbackAuth();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+                if (message.startsWith("/errorAuth")) {
+                    String[] strSplit = message.split("&");
+                    Controller.freeText = strSplit[1];
+                    Platform.runLater(()-> {
+                        try {
+                            callbackAuth.callbackAuth();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
             }
     }

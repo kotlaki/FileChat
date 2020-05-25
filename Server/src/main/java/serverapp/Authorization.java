@@ -11,7 +11,7 @@ public class Authorization {
     public static boolean isAuth = false;
     public static boolean equalsNick = false;
 
-    public static void checkUser(String str, ChannelHandlerContext ctx) {
+    public static void checkUser(String str, ChannelHandlerContext ctx) throws IOException {
         isAuth = false;
         String[] token = str.split(" ");
         if (str.startsWith("/auth")) {
@@ -19,7 +19,7 @@ public class Authorization {
                 String nickName = SqlWorker.getNickByLoginAndPass(token[1], token[2]);
                 if (nickName == null) {
                     System.out.println("Не верные данные авторизации пользователя!!!");
-                    MyCommandSend.sendCommand("Не верные данные авторизации " +
+                    MyCommandSend.sendCommand("/errorAuth&Не верные данные авторизации " +
                             "пользователя!!! Проверте логин и пароль...", ctx.channel());
                     ctx.close();
                 } else {
@@ -43,13 +43,15 @@ public class Authorization {
                 }
             } catch (ArrayIndexOutOfBoundsException | IOException e) {
                 System.out.println("Пользователь ввел не верный логин и пароль!!!");
-                ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
-                        "Проверьте правильность ввода логина и пароля!!!", CharsetUtil.UTF_8));
+//                ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
+//                        "Проверьте правильность ввода логина и пароля!!!", CharsetUtil.UTF_8));
+                MyCommandSend.sendCommand("/errorAuth&Пользователь ввел не верный логин и пароль!!!", ctx.channel());
             }
         } else {
             System.out.println("Пользователь ввел не верный логин или пароль!!!");
-            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
-                    "Вы ввели не верный логин или пароль!!!", CharsetUtil.UTF_8));
+//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
+//                    "Вы ввели не верный логин или пароль!!!", CharsetUtil.UTF_8));
+            MyCommandSend.sendCommand("/errorAuth&Вы ввели не верный логин или пароль!!!", ctx.channel());
             ctx.close();
         }
     }

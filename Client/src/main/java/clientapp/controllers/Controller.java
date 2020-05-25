@@ -2,6 +2,7 @@ package clientapp.controllers;
 
 import clientapp.ClientHandler;
 import common.Callback;
+import common.CallbackAuth;
 import common.MyCommandSend;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -16,10 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -36,11 +34,18 @@ public class Controller extends Application {
     public Button btnEnter;
     public Hyperlink linkRegistration;
 
+    public ChannelFuture f;
     public static Channel currentChannel;
+    public static String nick;
+    public static String freeText;
 
 
     public void setCallbackReceive(Callback callbackReceive) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackReceived(callbackReceive);
+    }
+
+    public void setCallbackAuth(CallbackAuth callbackAuth) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackAuth(callbackAuth);
     }
 
     @Override
@@ -85,7 +90,7 @@ public class Controller extends Application {
                                 System.out.println(currentChannel);
                             }
                         });
-                ChannelFuture f = b.connect().sync();
+                f = b.connect().sync();
                 authorization(f, txtLoginEnter.getText(), txtPasswordEnter.getText());
 //                setAuthorized(true);
                 f.channel().closeFuture().sync();
@@ -103,16 +108,28 @@ public class Controller extends Application {
         thread.start();
     }
 
-    public void btnEnter(ActionEvent actionEvent) throws IOException {
+    public void btnEnter(ActionEvent actionEvent) throws IOException, InterruptedException {
         connect();
-        pStage.close();
-        new ControllerChat().run();
     }
 
-    public static void authorization(ChannelFuture ctx, String login, String password) throws IOException {
+    public void authorization(ChannelFuture ctx, String login, String password) throws IOException, InterruptedException {
         // блок отправки данных авторизации пользователя
         String str = new String("/auth" + " " + login + " " + password);
         MyCommandSend.sendCommand(str, ctx.channel());
+        // ждем ответа сервера
+        setCallbackAuth(()->{
+            System.out.println("nick = " + nick);
+            if (nick != null) {
+                pStage.close();
+                new ControllerChat().run();
+            } else {
+                Alert errorAuth = new Alert(Alert.AlertType.ERROR);
+                errorAuth.setTitle("Ошибка аутентификации!");
+                errorAuth.setHeaderText("Результат:");
+                errorAuth.setContentText(freeText);
+                errorAuth.showAndWait();
+            }
+        });
     }
 
     public void registrationNewUser(ActionEvent actionEvent) throws IOException, InterruptedException {

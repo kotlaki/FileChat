@@ -29,7 +29,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     public Worker worker;
 
-    public ServerHandler(String nickName, ChannelHandlerContext ctx, boolean isAuth) {
+    public ServerHandler(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException {
         worker = new Worker(nickName, ctx, isAuth);
     }
 

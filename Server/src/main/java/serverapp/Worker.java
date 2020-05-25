@@ -17,14 +17,15 @@ public class Worker {
     private ChannelHandlerContext ctx;
     private boolean isAuth;
 
-    public Worker(String nickName, ChannelHandlerContext ctx, boolean isAuth) {
+    public Worker(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException {
         this.nickName = nickName;
         this.ctx = ctx;
         this.isAuth = isAuth;
 
         if (nickName != null && isAuth) {
             Server.subscribe(this);
-            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(nickName, CharsetUtil.UTF_8));
+//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(nickName, CharsetUtil.UTF_8));
+            MyCommandSend.sendCommand("/authOK " + nickName, ctx.channel());
         }
     }
 
@@ -66,6 +67,12 @@ public class Worker {
                         String[] strSplit = message.split(" ");
                         Files.delete(Paths.get("server_storage/" + strSplit[1]));
                         System.out.println("Файл " + strSplit[1] + " удален пользователем " + nickName + "!!!");
+                    }
+                    // блок откючения клиента
+                    if (message.startsWith("/authOFF")) {
+//                        String[] strSplit = message.split(" ");
+                        Server.unsubscribe(this);
+                        ctx.channel().close();
                     }
                     System.out.println("From client = " + message);
                 }
