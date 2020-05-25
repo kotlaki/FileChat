@@ -1,8 +1,9 @@
 package clientapp.controllers;
 
 import clientapp.ClientHandler;
-import common.Callback;
-import common.CallbackAuth;
+import clientapp.Callback;
+import clientapp.CallbackAuth;
+import clientapp.CallbackReg;
 import common.MyCommandSend;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -33,6 +34,7 @@ public class Controller extends Application {
     public PasswordField txtPasswordEnter;
     public Button btnEnter;
     public Hyperlink linkRegistration;
+    public boolean isBtnReg = false;
 
     public ChannelFuture f;
     public static Channel currentChannel;
@@ -46,6 +48,10 @@ public class Controller extends Application {
 
     public void setCallbackAuth(CallbackAuth callbackAuth) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackAuth(callbackAuth);
+    }
+
+    public void setCallbackReg(CallbackReg callbackReg) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackReg(callbackReg);
     }
 
     @Override
@@ -91,7 +97,9 @@ public class Controller extends Application {
                             }
                         });
                 f = b.connect().sync();
-                authorization(f, txtLoginEnter.getText(), txtPasswordEnter.getText());
+                if (!isBtnReg) {
+                    authorization(f, txtLoginEnter.getText(), txtPasswordEnter.getText());
+                }
 //                setAuthorized(true);
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | IOException e) {
@@ -109,6 +117,7 @@ public class Controller extends Application {
     }
 
     public void btnEnter(ActionEvent actionEvent) throws IOException, InterruptedException {
+        isBtnReg = false;
         connect();
     }
 
@@ -133,6 +142,8 @@ public class Controller extends Application {
     }
 
     public void registrationNewUser(ActionEvent actionEvent) throws IOException, InterruptedException {
+        isBtnReg = true;
+        connect();
         pStage.hide();      // прячем окно авторизации
         new ControllerRegistration().run();  // запускаем контроллер для регистрации нового пользователя
         pStage.show();

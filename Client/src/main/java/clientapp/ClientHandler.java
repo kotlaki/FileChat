@@ -2,10 +2,7 @@ package clientapp;
 
 import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerStorage;
-import common.Callback;
-import common.CallbackAuth;
-import common.MyCommandReceive;
-import common.MyFileReceive;
+import common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -26,6 +23,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public void setCallbackAuth(CallbackAuth callbackAuth) {
         this.callbackAuth = callbackAuth;
+    }
+
+    public CallbackReg callbackReg;
+
+    public void setCallbackReg(CallbackReg callbackReg) {
+        this.callbackReg = callbackReg;
     }
 
     @Override
@@ -78,6 +81,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    });
+                }
+                if (message.startsWith("/respReg")) {
+                    String[] strSplit = message.split("&");
+                    Controller.freeText = strSplit[1];
+                    Platform.runLater(()->{
+                        callbackReg.callbackReg();
                     });
                 }
             }

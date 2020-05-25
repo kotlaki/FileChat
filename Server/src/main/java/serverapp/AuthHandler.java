@@ -1,6 +1,7 @@
 package serverapp;
 
 import common.MyCommandReceive;
+import common.MyCommandSend;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,9 +14,12 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
         String str = MyCommandReceive.receiveCommand(in);
-        if (str.startsWith("/auth /reg")) {
-            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(Authorization.addUser(str, ctx), CharsetUtil.UTF_8));
+        // блок регистрации и авторизации пользователей
+        if (str.startsWith("/regNewUser")) {
+            // регистрируем нового пользователя и отправляем ответ клиенту
+            MyCommandSend.sendCommand("/respReg&" + Authorization.addUser(str, ctx), ctx.channel());
         } else {
+            // авторизируем пользователей
             Authorization.checkUser(str, ctx);
         }
     }

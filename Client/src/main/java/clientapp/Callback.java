@@ -1,4 +1,4 @@
-package common;
+package clientapp;
 
 import java.io.IOException;
 

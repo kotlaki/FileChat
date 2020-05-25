@@ -59,7 +59,7 @@ public class Authorization {
         String result = null;
         try {
             String[] token = str.split(" ");
-            result = SqlWorker.addUser(token[2], token[3], token[4], token[5]);
+            result = SqlWorker.addUser(token[1], token[2], token[3], token[4]);
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
             System.out.println("При регистрации нового пользователя пришли не валидные данные!!!");

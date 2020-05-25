@@ -47,7 +47,7 @@ public class SqlWorker {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return "Ошибка при добавлении пользователя! Повторите регистрацию!";
     }
 
     // прверяеместь ли совпадения в БД по 2 пользователям. если есть возвращаем true

@@ -1,5 +1,6 @@
 package clientapp.controllers;
 
+import clientapp.Callback;
 import common.*;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
