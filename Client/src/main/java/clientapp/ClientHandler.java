@@ -1,6 +1,7 @@
 package clientapp;
 
 import clientapp.controllers.Controller;
+import clientapp.controllers.ControllerChat;
 import clientapp.controllers.ControllerStorage;
 import common.*;
 import io.netty.buffer.ByteBuf;
@@ -29,6 +30,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public void setCallbackReg(CallbackReg callbackReg) {
         this.callbackReg = callbackReg;
+    }
+
+    public CallbackClientList callbackClientList;
+
+    public void setCallbackClientList(CallbackClientList callbackClientList) {
+        this.callbackClientList = callbackClientList;
     }
 
     @Override
@@ -60,6 +67,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         });
                     }
                 }
+
+                if (message.startsWith("/respClientList")) {
+                    if (MyCommandReceive.currentState == MyCommandReceive.State.IDLE) {
+                        Platform.runLater(() -> {
+                                callbackClientList.callbackClientList();
+                            ControllerChat.clientListFromServer = message;
+                        });
+                    }
+                }
+
                 if (message.startsWith("/authOK")) {
                     System.out.println("AUTH OK!!!");
                     String[] strSplit = message.split(" ");

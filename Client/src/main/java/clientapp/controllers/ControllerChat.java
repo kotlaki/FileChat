@@ -1,6 +1,9 @@
 package clientapp.controllers;
 
 import common.MyCommandSend;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class ControllerChat implements Initializable {
@@ -22,6 +26,8 @@ public class ControllerChat implements Initializable {
     public Button btnOpenStorage;
     public Button btnExitChat;
     public ListView listUser;
+
+    public static String clientListFromServer;
 
     public ControllerChat() {
 
@@ -42,7 +48,15 @@ public class ControllerChat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!");
+        try {
+            MyCommandSend.sendCommand("/clientList", Controller.currentChannel);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Controller.linkController.setCallbackClientList(()->{
+            txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!");
+            clientList();
+        });
     }
 
     public void sendMsg(ActionEvent actionEvent) {
@@ -61,6 +75,18 @@ public class ControllerChat implements Initializable {
         // закрываем текущее окно
         Stage stage = (Stage) btnExitChat.getScene().getWindow();
         stage.close();
+    }
+
+    public void clientList(){
+        Platform.runLater(()->{
+            String[] strSplit = clientListFromServer.split(" ");
+            String[] result = new String[strSplit.length - 1];
+            for (int i = 1; i < strSplit.length; i++) {
+                result[i - 1] = strSplit[i];
+            }
+            ObservableList<String> clientList = FXCollections.observableArrayList(Arrays.asList(result));
+            listUser.setItems(clientList);
+        });
     }
 
 

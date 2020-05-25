@@ -1,9 +1,6 @@
 package clientapp.controllers;
 
-import clientapp.ClientHandler;
-import clientapp.Callback;
-import clientapp.CallbackAuth;
-import clientapp.CallbackReg;
+import clientapp.*;
 import common.MyCommandSend;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -52,6 +49,10 @@ public class Controller extends Application {
 
     public void setCallbackReg(CallbackReg callbackReg) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackReg(callbackReg);
+    }
+
+    public void setCallbackClientList(CallbackClientList callbackClientList) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackClientList(callbackClientList);
     }
 
     @Override

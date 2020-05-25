@@ -24,7 +24,6 @@ public class Worker {
 
         if (nickName != null && isAuth) {
             Server.subscribe(this);
-//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(nickName, CharsetUtil.UTF_8));
             MyCommandSend.sendCommand("/authOK " + nickName, ctx.channel());
         }
     }
@@ -60,9 +59,11 @@ public class Worker {
                 // приемка сообщений
                 if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                     String message = MyCommandReceive.receiveCommand(in);
+                    // блок обработки запроса и отправки списка файлов клиенту
                     if (message.equals("/req_list")) {
                         MyCommandSend.sendCommand("/req_list " + preSplit(), this.ctx.channel());
                     }
+                    // блок удаления файлов на сервере
                     if (message.startsWith("/delete")) {
                         String[] strSplit = message.split(" ");
                         Files.delete(Paths.get("server_storage/" + strSplit[1]));
@@ -70,12 +71,24 @@ public class Worker {
                     }
                     // блок откючения клиента
                     if (message.startsWith("/authOFF")) {
-//                        String[] strSplit = message.split(" ");
                         Server.unsubscribe(this);
                         ctx.channel().close();
                     }
+                    // блок обработки запроса списка активных пользователей и отправки их клиенту
+                    if (message.equals("/clientList")) {
+                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
+                    }
                     System.out.println("From client = " + message);
                 }
+    }
+
+    // собираем строку со списком активных пользователей для отправки клиентам
+    public String clientList() {
+        StringBuilder clientSB = new StringBuilder();
+        for (Worker o: Server.clients) {
+            clientSB.append(o.getNickName()).append(" ");
+        }
+        return clientSB.toString();
     }
 
     // составляем строку списка файлов для отправки клиенту
