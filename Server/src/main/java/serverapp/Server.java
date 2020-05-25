@@ -1,5 +1,6 @@
 package serverapp;
 
+import common.MyCommandSend;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,10 +9,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.io.IOException;
 import java.util.Vector;
 
 public class Server {
-    public static Vector<Worker> clients = new Vector<>();
+    public static Vector<Worker> clients = new Vector<>();  // тут храним информацию о авторизированных пользователях
     public void run() {
         EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup work = new NioEventLoopGroup();
@@ -38,13 +40,12 @@ public class Server {
         }
     }
 
-    public static void subscribe(Worker client) {
-        clients.add(client);
+    public static void subscribe(Worker client) throws IOException {
+        clients.add(client);    // добавляем в коллекцию авторезированного пользователя
     }
 
     public static void unsubscribe(Worker client) {
-        clients.remove(client);
-//        broadcastClientsList();
+        clients.remove(client); // удаляем из коллекции отключившегося пользователя
     }
 
     public static void main(String[] args) {

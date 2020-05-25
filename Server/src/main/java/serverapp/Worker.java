@@ -2,7 +2,6 @@ package serverapp;
 
 import common.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
@@ -17,14 +16,19 @@ public class Worker {
     private ChannelHandlerContext ctx;
     private boolean isAuth;
 
-    public Worker(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException {
+    public Worker(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException, InterruptedException {
         this.nickName = nickName;
         this.ctx = ctx;
         this.isAuth = isAuth;
 
+        // если ник != null значит авторизация прошла успешно
         if (nickName != null && isAuth) {
-            Server.subscribe(this);
-            MyCommandSend.sendCommand("/authOK " + nickName, ctx.channel());
+            Server.subscribe(this);     // помещаем информацию о пользователе в vector clients
+            MyCommandSend.sendCommand("/authOK " + nickName, ctx.channel());    // посылаем клиенту ник авторизованого пользователя
+            Thread.sleep(500);  // делаем интервал м\у двумя служебными сообщениями
+            for (Worker o: Server.clients) {
+                MyCommandSend.sendCommand("/respClientList " + clientList(), o.getCtx().channel()); // пробегаем клиентов и рассылаем им обновленный список активных пользователей
+            }
         }
     }
 
@@ -73,11 +77,14 @@ public class Worker {
                     if (message.startsWith("/authOFF")) {
                         Server.unsubscribe(this);
                         ctx.channel().close();
+                        for (Worker o: Server.clients) {
+                            MyCommandSend.sendCommand("/respClientList " + clientList(), o.getCtx().channel());
+                        }
                     }
                     // блок обработки запроса списка активных пользователей и отправки их клиенту
-                    if (message.equals("/clientList")) {
-                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
-                    }
+//                    if (message.equals("/clientList")) {
+//                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
+//                    }
                     System.out.println("From client = " + message);
                 }
     }
@@ -85,7 +92,7 @@ public class Worker {
     // собираем строку со списком активных пользователей для отправки клиентам
     public String clientList() {
         StringBuilder clientSB = new StringBuilder();
-        for (Worker o: Server.clients) {
+        for (Worker o : Server.clients) {
             clientSB.append(o.getNickName()).append(" ");
         }
         return clientSB.toString();
@@ -95,7 +102,7 @@ public class Worker {
     public String preSplit() throws IOException {
         StringBuilder listSB = new StringBuilder();
         List<String> tmpList = MyFileList.listFile("server_storage");
-        for (String o: tmpList) {
+        for (String o : tmpList) {
             listSB.append(o).append(" ");
         }
         return listSB.toString();

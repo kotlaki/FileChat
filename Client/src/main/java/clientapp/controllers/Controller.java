@@ -33,24 +33,28 @@ public class Controller extends Application {
     public Hyperlink linkRegistration;
     public boolean isBtnReg = false;
 
-    public ChannelFuture f;
+    public ChannelFuture f;     // ???
     public static Channel currentChannel;
     public static String nick;
     public static String freeText;
 
 
+    // колбэк для входящего списка файлов
     public void setCallbackReceive(Callback callbackReceive) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackReceived(callbackReceive);
     }
 
+    // колбэк для входящего пакета аутентификации
     public void setCallbackAuth(CallbackAuth callbackAuth) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackAuth(callbackAuth);
     }
 
+    // колбэк для входящего пакета регистрации нового пользователя
     public void setCallbackReg(CallbackReg callbackReg) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackReg(callbackReg);
     }
 
+    // колбэк для входящего пакета со списком активных пользователей
     public void setCallbackClientList(CallbackClientList callbackClientList) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackClientList(callbackClientList);
     }
@@ -66,16 +70,14 @@ public class Controller extends Application {
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setScene(scene);
         primaryStage.show();
-        // берем ссылку на текущий экземпляр контроллера
-        linkController = fxmlLoader.getController();
-        // сеттером передаем primaryStage для использования вне метода start()
-        linkController.setpStage(primaryStage);
+        linkController = fxmlLoader.getController();     // берем ссылку на текущий экземпляр контроллера
+        linkController.setpStage(primaryStage);         // сеттером передаем primaryStage для использования вне метода start()
     }
 
 
-    public Stage getpStage() {
-        return pStage;
-    }
+//    public Stage getpStage() {
+//        return pStage;
+//    }
 
     public void setpStage(Stage pStage) {
         this.pStage = pStage;
@@ -101,7 +103,6 @@ public class Controller extends Application {
                 if (!isBtnReg) {
                     authorization(f, txtLoginEnter.getText(), txtPasswordEnter.getText());
                 }
-//                setAuthorized(true);
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -117,7 +118,7 @@ public class Controller extends Application {
         thread.start();
     }
 
-    public void btnEnter(ActionEvent actionEvent) throws IOException, InterruptedException {
+    public void btnEnter(ActionEvent actionEvent) {
         isBtnReg = false;
         connect();
     }

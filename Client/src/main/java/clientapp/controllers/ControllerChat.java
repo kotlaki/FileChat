@@ -48,13 +48,13 @@ public class ControllerChat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            MyCommandSend.sendCommand("/clientList", Controller.currentChannel);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            MyCommandSend.sendCommand("/clientList", Controller.currentChannel);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!");
         Controller.linkController.setCallbackClientList(()->{
-            txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!");
             clientList();
         });
     }

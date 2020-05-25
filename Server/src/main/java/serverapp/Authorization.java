@@ -11,7 +11,7 @@ public class Authorization {
     public static boolean isAuth = false;
     public static boolean equalsNick = false;
 
-    public static void checkUser(String str, ChannelHandlerContext ctx) throws IOException {
+    public static void checkUser(String str, ChannelHandlerContext ctx) throws IOException, InterruptedException {
         isAuth = false;
         String[] token = str.split(" ");
         if (str.startsWith("/auth")) {
@@ -27,8 +27,8 @@ public class Authorization {
                     for (Worker o: Server.clients) {
                         if (o.getNickName().equals(nickName)) {
                             equalsNick = true;
-                            System.out.println("Повторный вход пользователя!!!");
-                            ctx.channel().writeAndFlush(Unpooled.copiedBuffer("/close", CharsetUtil.UTF_8));
+                            MyCommandSend.sendCommand("/errorAuth&Повторный вход пользователя!!!", ctx.channel());
+//                            ctx.channel().writeAndFlush(Unpooled.copiedBuffer("/close", CharsetUtil.UTF_8));
                             break;
                         }
                     }
@@ -43,14 +43,10 @@ public class Authorization {
                 }
             } catch (ArrayIndexOutOfBoundsException | IOException e) {
                 System.out.println("Пользователь ввел не верный логин и пароль!!!");
-//                ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
-//                        "Проверьте правильность ввода логина и пароля!!!", CharsetUtil.UTF_8));
                 MyCommandSend.sendCommand("/errorAuth&Пользователь ввел не верный логин и пароль!!!", ctx.channel());
             }
         } else {
             System.out.println("Пользователь ввел не верный логин или пароль!!!");
-//            ctx.channel().writeAndFlush(Unpooled.copiedBuffer(
-//                    "Вы ввели не верный логин или пароль!!!", CharsetUtil.UTF_8));
             MyCommandSend.sendCommand("/errorAuth&Вы ввели не верный логин или пароль!!!", ctx.channel());
             ctx.close();
         }
