@@ -38,6 +38,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackClientList = callbackClientList;
     }
 
+    public CallbackConfirm callbackConfirm;
+
+    public void setCallbackConfirm(CallbackConfirm callbackConfirm) {
+        this.callbackConfirm = callbackConfirm;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // принимаем служебные данные от сервера
@@ -54,8 +60,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                 String message = MyCommandReceive.receiveCommand(buf);
                 System.out.println("From server = " + message);
+                if (message.startsWith("/all")) {
+                    String[] strSplit = message.split("&");
+                    System.out.println("in handler = " + strSplit[1]);
+                    ControllerChat.message = strSplit[1] + " пишет: " + strSplit[2];
+                }
+                if (message.equals("/confReceive")) {
+                    Platform.runLater(()-> {
+                        callbackConfirm.callbackConfirm();
+                    });
+                }
                 if (message.startsWith("/req_list")) {
-                    // TO DO от сюда надо передать строку в NewControllerStorage
                     if (MyCommandReceive.currentState == MyCommandReceive.State.IDLE) {
                         Platform.runLater(() -> {
                             try {

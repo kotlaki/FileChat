@@ -59,6 +59,11 @@ public class Controller extends Application {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackClientList(callbackClientList);
     }
 
+    // колбэк для потверждений о получении сообщений
+    public void setCallbackConfirm(CallbackConfirm callbackConfirm) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirm(callbackConfirm);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();

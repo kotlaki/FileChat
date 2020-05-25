@@ -2,6 +2,7 @@ package serverapp;
 
 import common.*;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
@@ -15,6 +16,7 @@ public class Worker {
     private String nickName;
     private ChannelHandlerContext ctx;
     private boolean isAuth;
+    public Channel currentChannel;
 
     public Worker(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException, InterruptedException {
         this.nickName = nickName;
@@ -85,8 +87,28 @@ public class Worker {
 //                    if (message.equals("/clientList")) {
 //                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
 //                    }
+                    if (message.startsWith("/msgAll")) {
+                        currentChannel = this.ctx.channel();
+                        String[] strSplit = message.split("&");
+                        MyCommandSend.sendCommand("/confReceive", this.ctx.channel());
+                        sendMsgAll(strSplit[1]);
+                    }
                     System.out.println("From client = " + message);
                 }
+    }
+
+    public void sendMsgAll(String message) throws IOException {
+        String nick = "";
+        for (Worker o: Server.clients) {
+           if (o.getCtx().channel() == currentChannel) {
+               nick = o.getNickName();
+           }
+        }
+        for (Worker o: Server.clients) {
+            if (o.getCtx().channel() != currentChannel) {
+                MyCommandSend.sendCommand("/all&" + nick + "&" + message, o.ctx.channel());
+            }
+        }
     }
 
     // собираем строку со списком активных пользователей для отправки клиентам

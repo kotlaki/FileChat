@@ -28,11 +28,11 @@ public class ControllerChat implements Initializable {
     public ListView listUser;
 
     public static String clientListFromServer;
+    public static String message;
 
     public ControllerChat() {
 
     }
-
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
@@ -53,14 +53,23 @@ public class ControllerChat implements Initializable {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!");
+        txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!\n");
         Controller.linkController.setCallbackClientList(()->{
             clientList();
         });
     }
 
-    public void sendMsg(ActionEvent actionEvent) {
+    public void sendMsg(ActionEvent actionEvent) throws IOException {
+        MyCommandSend.sendCommand("/msgAll&" + txtMsgSend.getText(), Controller.currentChannel);
+        Controller.linkController.setCallbackConfirm(()->{
+            txtChat.appendText("Я пишу: " + txtMsgSend.getText() + "\n");
+            txtMsgSend.clear();
+        });
     }
+
+//    public void receiveMsg() {
+//        txtChat.appendText(message + "\n");
+//    }
 
     public void openStorage(ActionEvent actionEvent) throws IOException {
         new ControllerStorage().run();
