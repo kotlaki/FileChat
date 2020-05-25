@@ -34,15 +34,24 @@ public class ControllerRegistration {
     }
 
     public void btnAddNewUser(ActionEvent actionEvent) throws IOException {
-        MyCommandSend.sendCommand("/regNewUser " + txtLoginRegistration.getText() + " " + txtPasswordConfirmRegistration.getText()
-                + " " + txtNickRegistration.getText() + " " + txtAbout.getText(), Controller.currentChannel);
-        Controller.linkController.setCallbackReg(()->{
-            Alert errorAuth = new Alert(Alert.AlertType.INFORMATION);
+        if (txtLoginRegistration.getText().equals("") || txtNickRegistration.getText().equals("")
+                || txtPasswordRegistration.getText().equals("") || txtPasswordConfirmRegistration.getText().equals("")) {
+            Alert errorAuth = new Alert(Alert.AlertType.WARNING);
             errorAuth.setTitle("Регистрация нового пользователя!");
             errorAuth.setHeaderText("Результат:");
-            errorAuth.setContentText(Controller.freeText);
+            errorAuth.setContentText("Все поля поля, кроме поля 'О себе' обязательны для заполнения!!!");
             errorAuth.showAndWait();
-        });
+        } else {
+            MyCommandSend.sendCommand("/regNewUser " + txtLoginRegistration.getText() + " " + txtPasswordConfirmRegistration.getText()
+                    + " " + txtNickRegistration.getText() + " " + txtAbout.getText(), Controller.currentChannel);
+            Controller.linkController.setCallbackReg(() -> {
+                Alert errorAuth = new Alert(Alert.AlertType.INFORMATION);
+                errorAuth.setTitle("Регистрация нового пользователя!");
+                errorAuth.setHeaderText("Результат:");
+                errorAuth.setContentText(Controller.freeText);
+                errorAuth.showAndWait();
+            });
+        }
     }
 
     public void btnCancelRegistration(ActionEvent actionEvent) throws Exception {
