@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="289.0" prefWidth="262.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.ControllerRegistration">
+   <children>
+      <TextField fx:id="txtNickRegistration" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="237.0" promptText="Введите ник" />
+      <TextField fx:id="txtLoginRegistration" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="120.0" prefHeight="25.0" prefWidth="237.0" promptText="Введите логин" />
+      <PasswordField fx:id="txtPasswordRegistration" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="152.0" prefHeight="25.0" prefWidth="237.0" promptText="Введите пароль" />
+      <PasswordField fx:id="txtPasswordConfirmRegistration" alignment="CENTER" focusTraversable="false" layoutX="14.0" layoutY="187.0" prefHeight="25.0" prefWidth="237.0" promptText="Подтвердите пароль" />
+      <TextArea fx:id="txtAbout" focusTraversable="false" layoutX="13.0" layoutY="51.0" prefHeight="59.0" prefWidth="237.0" promptText="О себе" />
+      <Button fx:id="btnAddNewUser" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="73.0" layoutY="223.0" mnemonicParsing="false" onAction="#btnAddNewUser" text="Зарегистрировать" />
+      <Button fx:id="btnCancelRegistration" alignment="CENTER" contentDisplay="CENTER" layoutX="104.0" layoutY="256.0" mnemonicParsing="false" onAction="#btnCancelRegistration" text="Отмена" />
+   </children>
+</AnchorPane>
