@@ -48,15 +48,9 @@ public class ControllerChat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        try {
-//            MyCommandSend.sendCommand("/clientList", Controller.currentChannel);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!\n");
-        Controller.linkController.setCallbackClientList(()->{
-            clientList();
-        });
+        Controller.linkController.setCallbackClientList(this::clientList);  // получаем список активных пользователей
+        Controller.linkController.setCallbackMsgAll(() -> txtChat.appendText(message + "\n"));  // ждем сообщений и выводим их
     }
 
     public void sendMsg(ActionEvent actionEvent) throws IOException {
@@ -67,9 +61,8 @@ public class ControllerChat implements Initializable {
         });
     }
 
-//    public void receiveMsg() {
-//        txtChat.appendText(message + "\n");
-//    }
+    public void receiveMsg() {
+    }
 
     public void openStorage(ActionEvent actionEvent) throws IOException {
         new ControllerStorage().run();

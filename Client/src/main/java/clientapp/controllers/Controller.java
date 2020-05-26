@@ -64,6 +64,10 @@ public class Controller extends Application {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirm(callbackConfirm);
     }
 
+    public void setCallbackMsgAll(CallbackMsgAll callbackMsgAll) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackMsgAll(callbackMsgAll);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();

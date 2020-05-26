@@ -44,12 +44,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackConfirm = callbackConfirm;
     }
 
+    public CallbackMsgAll callbackMsgAll;
+
+    public void setCallbackMsgAll(CallbackMsgAll callbackMsgAll) {
+        this.callbackMsgAll = callbackMsgAll;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // принимаем служебные данные от сервера
         ByteBuf buf = (ByteBuf) msg;
         String str = buf.toString(CharsetUtil.UTF_8);
-//        Controller.currentController.txtChat.appendText(str + "\n");
+        // обрабатываем получение файла от сервера
         if (str.startsWith("/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
             MyFileReceive.receiveFile(buf, "client_storage/");
             if (MyFileReceive.currentState == MyFileReceive.State.IDLE) {
@@ -60,16 +65,22 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
                 String message = MyCommandReceive.receiveCommand(buf);
                 System.out.println("From server = " + message);
+                // получаем сооющение предназначенное для всех
                 if (message.startsWith("/all")) {
                     String[] strSplit = message.split("&");
                     System.out.println("in handler = " + strSplit[1]);
                     ControllerChat.message = strSplit[1] + " пишет: " + strSplit[2];
+                    Platform.runLater(()->{
+                        callbackMsgAll.callbackMsgAll();
+                    });
                 }
+                // обрабатываем подтверждение получения сервером сообщения
                 if (message.equals("/confReceive")) {
                     Platform.runLater(()-> {
                         callbackConfirm.callbackConfirm();
                     });
                 }
+                // обрабатываем получение списка файлов
                 if (message.startsWith("/req_list")) {
                     if (MyCommandReceive.currentState == MyCommandReceive.State.IDLE) {
                         Platform.runLater(() -> {
@@ -82,7 +93,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         });
                     }
                 }
-
+                // обрабатываем получение списка активных пользователей
                 if (message.startsWith("/respClientList")) {
                     if (MyCommandReceive.currentState == MyCommandReceive.State.IDLE) {
                         Platform.runLater(() -> {
@@ -91,9 +102,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         });
                     }
                 }
-
+                // обрабатываем пришедший ник в ответ на авторизацию
                 if (message.startsWith("/authOK")) {
-                    System.out.println("AUTH OK!!!");
                     String[] strSplit = message.split(" ");
                     Controller.nick = strSplit[1];
                     Platform.runLater(()-> {
@@ -104,6 +114,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         }
                     });
                 }
+                // обрабатываем пришедшие ошибки от сервера возникшие при авторизации
                 if (message.startsWith("/errorAuth")) {
                     String[] strSplit = message.split("&");
                     Controller.freeText = strSplit[1];
@@ -115,6 +126,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         }
                     });
                 }
+                // обрабатываем ответ сервера при регистрации пользователя
                 if (message.startsWith("/respReg")) {
                     String[] strSplit = message.split("&");
                     Controller.freeText = strSplit[1];
