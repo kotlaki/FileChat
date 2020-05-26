@@ -25,7 +25,7 @@ public class ControllerChat implements Initializable {
     public Button btnMsgSend;
     public Button btnOpenStorage;
     public Button btnExitChat;
-    public ListView listUser;
+    public ListView<String> listUser;
 
     public static String clientListFromServer;
     public static String message;
@@ -83,9 +83,7 @@ public class ControllerChat implements Initializable {
         Platform.runLater(()->{
             String[] strSplit = clientListFromServer.split(" ");
             String[] result = new String[strSplit.length - 1];
-            for (int i = 1; i < strSplit.length; i++) {
-                result[i - 1] = strSplit[i];
-            }
+            System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
             ObservableList<String> clientList = FXCollections.observableArrayList(Arrays.asList(result));
             listUser.setItems(clientList);
         });

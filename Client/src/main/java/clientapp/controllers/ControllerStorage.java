@@ -40,7 +40,6 @@ public class ControllerStorage implements Initializable {
     public Button btnRemoveFile;
 
 
-    public List<String> fileList = new ArrayList<>();
     public static String msgFromServer;
     public String getNameFileToServer;
     public String getNameFileFromServer;
@@ -130,9 +129,7 @@ public class ControllerStorage implements Initializable {
             String[] strSplit = msgFromServer.split(" ");
             // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
             String[] result = new String[strSplit.length - 1];
-            for (int i = 1; i < strSplit.length; i++) {
-                result[i - 1] = strSplit[i];
-            }
+            System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
             ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
             listFileServer.setItems(files);
 
