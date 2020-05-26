@@ -1,5 +1,7 @@
 package clientapp.controllers;
 
+import clientapp.CallbackMsgPrivate;
+import clientapp.ClientHandler;
 import common.MyCommandSend;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -29,6 +31,11 @@ public class ControllerChat implements Initializable {
 
     public static String clientListFromServer;
     public static String message;
+    public static String nickTo;
+
+    public void setCallbackMsgPrivate(CallbackMsgPrivate callbackMsgPrivate) {
+        Controller.currentChannel.pipeline().get(ClientHandler.class).setCallbackMsgPrivate(callbackMsgPrivate);
+    }
 
     public ControllerChat() {
 
@@ -54,14 +61,11 @@ public class ControllerChat implements Initializable {
     }
 
     public void sendMsg(ActionEvent actionEvent) throws IOException {
-        MyCommandSend.sendCommand("/msgAll&" + txtMsgSend.getText(), Controller.currentChannel);
-        Controller.linkController.setCallbackConfirm(()->{
-            txtChat.appendText("Я пишу: " + txtMsgSend.getText() + "\n");
-            txtMsgSend.clear();
-        });
-    }
-
-    public void receiveMsg() {
+            MyCommandSend.sendCommand("/msgAll&" + txtMsgSend.getText(), Controller.currentChannel);
+            Controller.linkController.setCallbackConfirm(() -> {
+                txtChat.appendText("Я пишу: " + txtMsgSend.getText() + "\n");
+                txtMsgSend.clear();
+            });
     }
 
     public void openStorage(ActionEvent actionEvent) throws IOException {
@@ -86,6 +90,13 @@ public class ControllerChat implements Initializable {
             System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
             ObservableList<String> clientList = FXCollections.observableArrayList(Arrays.asList(result));
             listUser.setItems(clientList);
+
+            listUser.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null && !newValue.equals(Controller.nick)) {
+                    nickTo = newValue;
+                    new ControllerPrivateChat().run(nickTo);
+                }
+            });
         });
     }
 

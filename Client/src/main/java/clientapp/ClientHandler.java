@@ -2,6 +2,7 @@ package clientapp;
 
 import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerChat;
+import clientapp.controllers.ControllerPrivateChat;
 import clientapp.controllers.ControllerStorage;
 import common.*;
 import io.netty.buffer.ByteBuf;
@@ -50,6 +51,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackMsgAll = callbackMsgAll;
     }
 
+    public CallbackMsgPrivate callbackMsgPrivate;
+
+    public void setCallbackMsgPrivate(CallbackMsgPrivate callbackMsgPrivate) {
+        this.callbackMsgPrivate = callbackMsgPrivate;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -72,6 +79,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     ControllerChat.message = strSplit[1] + " пишет: " + strSplit[2];
                     Platform.runLater(()->{
                         callbackMsgAll.callbackMsgAll();
+                    });
+                }
+                // получаем приватные сообщения
+                if (message.startsWith("/pm")) {
+                    String[] strSplit = message.split("&");
+                    System.out.println("Private msg from " + strSplit[1] + " = " + strSplit[2]);
+                    ControllerPrivateChat.nickFrom = strSplit[1];
+                    ControllerPrivateChat.message = strSplit[2];
+                    Platform.runLater(()-> {
+                        callbackMsgPrivate.callbackMsgPrivate();
                     });
                 }
                 // обрабатываем подтверждение получения сервером сообщения

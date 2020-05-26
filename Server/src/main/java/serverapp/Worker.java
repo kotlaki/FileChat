@@ -93,12 +93,35 @@ public class Worker {
                         MyCommandSend.sendCommand("/confReceive", this.ctx.channel());
                         sendMsgAll(strSplit[1]);
                     }
+                    // блок обработки личных сообщений
+                    if (message.startsWith("/pm")) {
+                        currentChannel = this.ctx.channel();
+                        privateMsg(message);
+                    }
                     System.out.println("From client = " + message);
                 }
     }
 
+    public void privateMsg(String message) throws IOException {
+        String nickFrom = "";
+        // выясняем какой ник прислал сообщение
+        for (Worker o: Server.clients) {
+            if (o.getCtx().channel() == currentChannel) {
+                nickFrom = o.getNickName();
+            }
+        }
+        String[] strSplit = message.split("&");
+//        String nickTo = strSplit[1];        // выясняем кому пойдет сообщение
+        for (Worker o: Server.clients) {
+            if (o.getNickName().equals(strSplit[1])) {
+                MyCommandSend.sendCommand("/pm&" + nickFrom + "&" + strSplit[2], o.ctx.channel());
+            }
+        }
+    }
+
     public void sendMsgAll(String message) throws IOException {
         String nick = "";
+        // выясняем какой ник прислал сообщение
         for (Worker o: Server.clients) {
            if (o.getCtx().channel() == currentChannel) {
                nick = o.getNickName();

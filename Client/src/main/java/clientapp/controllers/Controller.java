@@ -68,6 +68,7 @@ public class Controller extends Application {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackMsgAll(callbackMsgAll);
     }
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -82,11 +83,6 @@ public class Controller extends Application {
         linkController = fxmlLoader.getController();     // берем ссылку на текущий экземпляр контроллера
         linkController.setpStage(primaryStage);         // сеттером передаем primaryStage для использования вне метода start()
     }
-
-
-//    public Stage getpStage() {
-//        return pStage;
-//    }
 
     public void setpStage(Stage pStage) {
         this.pStage = pStage;
