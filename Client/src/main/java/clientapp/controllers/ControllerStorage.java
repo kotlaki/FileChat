@@ -103,7 +103,8 @@ public class ControllerStorage implements Initializable {
     }
 
     public void receiveFileFromServer(ActionEvent actionEvent) throws IOException, InterruptedException {
-        Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+//        Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+        MyCommandSend.sendCommand("/fr " + "server_storage/" + getNameFileFromServer, Controller.currentChannel);
         // как только получаем полностью файл вызывается обновление списков файлов с помощью callback
         Controller.linkController.setCallbackReceive(this::refreshFile);
 
@@ -172,11 +173,13 @@ public class ControllerStorage implements Initializable {
                     deleteFile();
                 }
             });
+
             refreshFile();
         }
         // переносим файл с сервера на клиента
         if (getNameFileFromServer != null) {
-            Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+//            Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
+           MyCommandSend.sendCommand("/fr " + "server_storage/" + getNameFileFromServer, Controller.currentChannel);
             Controller.linkController.setCallbackReceive(this::deleteFile);
         }
     }
