@@ -14,31 +14,16 @@ public class MyFileSend {
 
     public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
-
-        // сигнальный байт
+        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);  // переводим имя файла в байты
         ByteBuf buf = null;
         byte[] flag = "/file".getBytes(StandardCharsets.UTF_8);     // [47, 102, 105, 108, 101]
-        buf = ByteBufAllocator.DEFAULT.directBuffer(flag.length);
-        buf.writeBytes(flag);
-        channel.write(buf);
-
-        // длинна имени файла
-        byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);
-        buf = ByteBufAllocator.DEFAULT.directBuffer(4);
-        buf.writeInt(filenameBytes.length);
-        channel.write(buf);
-
-        // имя файла
-        buf = ByteBufAllocator.DEFAULT.directBuffer(filenameBytes.length);
-        buf.writeBytes(filenameBytes);
-        channel.write(buf);
-
-        // размер файла
-        buf = ByteBufAllocator.DEFAULT.directBuffer(8);
-        buf.writeLong(Files.size(path));
-        channel.write(buf);
-
-        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);
+        buf = ByteBufAllocator.DEFAULT.directBuffer(flag.length + 4 + filenameBytes.length + 8);
+        buf.writeBytes(flag);           // передаем сигнальный байт в buf
+        buf.writeInt(filenameBytes.length);          // передаем длинну имени файла в buf
+        buf.writeBytes(filenameBytes);              // передаем имя файла в buf
+        buf.writeLong(Files.size(path));           // передаем размер файла в buf
+        channel.writeAndFlush(buf);
+        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);  // передаем файл в канал
         if (finishListener != null) {
             transferOperationFuture.addListener(finishListener);
         }
