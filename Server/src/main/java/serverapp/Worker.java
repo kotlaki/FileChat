@@ -74,6 +74,7 @@ public class Worker {
                         String[] strSplit = message.split(" ");
                         Files.delete(Paths.get("server_storage/" + strSplit[1]));
                         System.out.println("Файл " + strSplit[1] + " удален пользователем " + nickName + "!!!");
+                        MyCommandSend.sendCommand("/deleteOK", this.ctx.channel());
                     }
                     // блок откючения клиента
                     if (message.startsWith("/authOFF")) {

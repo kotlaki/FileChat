@@ -42,6 +42,7 @@ public class MyCommandReceive {
                     messageByte[index++] = buf.readByte();
                     receivedMsgLength++;
                     if (msgLength == receivedMsgLength) {
+                        receivedMsgLength = msgLength - 1;
                         currentState = State.IDLE;
                         break;
                     }

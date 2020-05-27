@@ -50,6 +50,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackMsgAll = callbackMsgAll;
     }
 
+    public CallbackConfirmDelete callbackConfirmDelete;
+
+    public void setCallbackConfirmDelete(CallbackConfirmDelete callbackConfirmDelete) {
+        this.callbackConfirmDelete = callbackConfirmDelete;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -78,6 +84,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 if (message.equals("/confReceive")) {
                     Platform.runLater(()-> {
                         callbackConfirm.callbackConfirm();
+                    });
+                }
+                // обрабатываем подврждение об удалении файла на сервере
+                if (message.equals("/deleteOK")) {
+                    Platform.runLater(()-> {
+                        try {
+                            callbackConfirmDelete.callbackConfirmDelete();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     });
                 }
                 // обрабатываем получение списка файлов

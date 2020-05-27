@@ -66,6 +66,22 @@ public class ControllerStorage implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // отслеживаем и вытаскиваем название имени файла при его выделении в списке клиента
+        listFileClient.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                System.out.println("to Storage from client = " + newValue);
+                getNameFileToServer = newValue;
+                getNameFileFromServer = null;
+            }
+        });
+
+        // отслеживаем и вытаскиваем название имени файла при его выделении в списке сервера
+        listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("to Storage from server = " + newValue);
+            getNameFileFromServer = newValue;
+            getNameFileToServer = null;
+        });
     }
 
     public void sendFileToServer() throws IOException, InterruptedException {
@@ -81,6 +97,7 @@ public class ControllerStorage implements Initializable {
                 progressBar.progressProperty().set(1);
                 Thread.sleep(1000);
                 progressBar.progressProperty().setValue(0);
+                refreshFile();
             }
         });
     }
@@ -107,15 +124,6 @@ public class ControllerStorage implements Initializable {
         listFileClient.setItems(files);
         // устанавливаем фокус на первый элемент в списке
         listFileClient.getFocusModel().focus(0);
-        // отслеживаем и вытаскиваем название имени файла при его выделении в списке
-        listFileClient.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                System.out.println("to Storage from client = " + newValue);
-                getNameFileToServer = newValue;
-                getNameFileFromServer = null;
-            }
-        });
     }
 
     public void refreshListServer() throws IOException {
@@ -132,13 +140,6 @@ public class ControllerStorage implements Initializable {
             System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
             ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
             listFileServer.setItems(files);
-
-            // отслеживаем и вытаскиваем название имени файла при его выделении в списке
-            listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                System.out.println("to Storage from server = " + newValue);
-                getNameFileFromServer = newValue;
-                getNameFileToServer = null;
-            });
         });
     }
 
@@ -171,6 +172,7 @@ public class ControllerStorage implements Initializable {
                     deleteFile();
                 }
             });
+            refreshFile();
         }
         // переносим файл с сервера на клиента
         if (getNameFileFromServer != null) {
@@ -183,6 +185,7 @@ public class ControllerStorage implements Initializable {
         // выясняем где удалить файл, на сервере или локально на клиенте
         if (getNameFileFromServer != null) {
             MyCommandSend.sendCommand("/delete " + getNameFileFromServer, Controller.currentChannel);
+            Controller.linkController.setCallbackConfirmDelete(this::refreshFile);
         }
         if (getNameFileToServer != null) {
             Files.delete(Paths.get("client_storage/" + getNameFileToServer));
