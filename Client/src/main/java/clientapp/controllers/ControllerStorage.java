@@ -2,8 +2,6 @@ package clientapp.controllers;
 
 import clientapp.Callback;
 import common.*;
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,18 +15,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class ControllerStorage implements Initializable {
+    public AnchorPane test;
     public ListView<String> listFileClient;
     public ListView<String> listFileServer;
     public Button btnCancelStorage;
@@ -42,7 +40,10 @@ public class ControllerStorage implements Initializable {
 
     public static String msgFromServer;
     public String getNameFileToServer;
+    public String tempNameFileToServer;
     public String getNameFileFromServer;
+    public String tempNameFileFromServer;
+    public int memoryIndex;
 
     MyFileReceive myFileReceive;
     Callback callback;
@@ -72,6 +73,9 @@ public class ControllerStorage implements Initializable {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 System.out.println("to Storage from client = " + newValue);
                 getNameFileToServer = newValue;
+                // TODO разобраться с определением фокуса модели
+//                System.out.println("CLIENT IS FOCUS = " + listFileServer.isFocused());
+//                System.out.println("SERVER IS FOCUS = " + listFileServer.isFocused());
                 getNameFileFromServer = null;
             }
         });
@@ -80,25 +84,21 @@ public class ControllerStorage implements Initializable {
         listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("to Storage from server = " + newValue);
             getNameFileFromServer = newValue;
+            // TODO разобраться с определением фокуса модели
+//            System.out.println("SERVER IS FOCUS = " + listFileServer.isFocused());
+//            System.out.println("CLIENT IS FOCUS = " + listFileClient.isFocused());
             getNameFileToServer = null;
         });
     }
 
     public void sendFileToServer() throws IOException, InterruptedException {
 
-        MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel, future -> {
-            if (!future.isSuccess()) {
-                future.cause().printStackTrace();
-            }
-
-            if (future.isSuccess()) {
-                System.out.println("Файл успешно передан...");
-
-                progressBar.progressProperty().set(1);
-                Thread.sleep(1000);
-                progressBar.progressProperty().setValue(0);
-                refreshFile();
-            }
+        MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
+        Controller.linkController.setCallbackConfirmReceiveFile(()->{
+            progressBar.progressProperty().set(1);
+            Thread.sleep(1000);
+            progressBar.progressProperty().setValue(0);
+            refreshFile();
         });
     }
 
@@ -120,11 +120,13 @@ public class ControllerStorage implements Initializable {
     }
 
     public void refreshListClient() throws IOException {
+        System.out.println("focus id client begin = " + listFileClient.getFocusModel().getFocusedIndex());
         // вытаскиваем в ListView данные из List и выводим
         ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile("client_storage"));
         listFileClient.setItems(files);
+//        System.out.println("focus id client end = " + listFileClient.getFocusModel().getFocusedIndex());
         // устанавливаем фокус на первый элемент в списке
-        listFileClient.getFocusModel().focus(0);
+//        listFileClient.getFocusModel().focus(0);
     }
 
     public void refreshListServer() throws IOException {
@@ -159,22 +161,11 @@ public class ControllerStorage implements Initializable {
     public void removeFile(ActionEvent actionEvent) throws IOException, InterruptedException {
         // переносим файл с клиента на сервер
         if (getNameFileToServer != null) {
-            MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel, future -> {
-                if (!future.isSuccess()) {
-                    future.cause().printStackTrace();
-                }
-
-                if (future.isSuccess()) {
-                    System.out.println("Файл успешно передан...");
-
-                    progressBar.progressProperty().set(1);
-                    Thread.sleep(1000);
-                    progressBar.progressProperty().setValue(0);
-                    deleteFile();
-                }
+            MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
+            Controller.linkController.setCallbackConfirmReceiveFile(()-> {
+                deleteFile();
+                Controller.linkController.setCallbackConfirmDelete(this::refreshFile);
             });
-
-            refreshFile();
         }
         // переносим файл с сервера на клиента
         if (getNameFileFromServer != null) {

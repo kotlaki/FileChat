@@ -49,6 +49,9 @@ public class Worker {
         // приемка файла
         if (str.startsWith("/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
             MyFileReceive.receiveFile(in, "server_storage/");
+            if (MyFileReceive.currentState == MyFileReceive.State.IDLE){
+                MyCommandSend.sendCommand("/receiveFileOK", this.ctx.channel());
+            }
         } else
             // приемка сообщений
             if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
@@ -56,14 +59,8 @@ public class Worker {
                 // обработка запроса на файл с последующей передачей файла клиенту
                 if (message.startsWith("/fr")) {
                     String[] strSplit = str.split(" ");
-                    MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel(), future -> {
-                        if (future.isSuccess()) {
-                            System.out.println("Файл отправлен...");
-                        }
-                        if (!future.isSuccess()) {
-                            System.out.println("Ошибка отправки файла!!!");
-                        }
-                    });
+                    MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel());
+                    // ПОДУМАТЬ НА СЧЕТ CALLBACK В ЭТОМ МЕСТЕ???!!!!
                 }
                 // блок обработки запроса и отправки списка файлов клиенту
                 if (message.equals("/req_list")) {
@@ -91,7 +88,7 @@ public class Worker {
                 if (message.startsWith("/msgAll")) {
                     currentChannel = this.ctx.channel();
                     String[] strSplit = message.split("&");
-                    MyCommandSend.sendCommand("/confReceive", this.ctx.channel());
+                    MyCommandSend.sendCommand("/confReceiveAllMsg", this.ctx.channel());
                     sendMsgAll(strSplit[1]);
                 }
                 System.out.println("From client = " + message);

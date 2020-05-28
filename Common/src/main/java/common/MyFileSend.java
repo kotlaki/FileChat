@@ -8,11 +8,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 public class MyFileSend {
 
-    public static void sendFile(Path path, Channel channel, ChannelFutureListener finishListener) throws IOException {
+    public static void sendFile(Path path, Channel channel) throws IOException {
         FileRegion region = new DefaultFileRegion(path.toFile(), 0, Files.size(path));
         byte[] filenameBytes = path.getFileName().toString().getBytes(StandardCharsets.UTF_8);  // переводим имя файла в байты
         ByteBuf buf = null;
@@ -24,8 +23,5 @@ public class MyFileSend {
         buf.writeLong(Files.size(path));           // передаем размер файла в buf
         channel.writeAndFlush(buf);
         ChannelFuture transferOperationFuture = channel.writeAndFlush(region);  // передаем файл в канал
-        if (finishListener != null) {
-            transferOperationFuture.addListener(finishListener);
-        }
     }
 }

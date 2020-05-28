@@ -14,7 +14,7 @@
       <Button fx:id="btnRefreshFile" alignment="CENTER" focusTraversable="false" layoutX="268.0" layoutY="27.0" mnemonicParsing="false" onAction="#refreshFile" text="Обновить" />
       <Label layoutX="21.0" layoutY="5.0" prefHeight="17.0" prefWidth="223.0" text="Мои файлы" />
       <Label layoutX="361.0" layoutY="5.0" prefHeight="17.0" prefWidth="232.0" text="Файлы на сервере" />
-      <Button layoutX="273.0" layoutY="254.0" mnemonicParsing="false" text="Удалить" fx:id="btnDeleteFile" onAction="#deleteFile"/>
-      <Button layoutX="273.0" layoutY="221.0" mnemonicParsing="false" text="Remove" fx:id="btnRemoveFile" onAction="#removeFile"/>
+      <Button fx:id="btnDeleteFile" layoutX="273.0" layoutY="254.0" mnemonicParsing="false" onAction="#deleteFile" text="Удалить" />
+      <Button fx:id="btnRemoveFile" layoutX="273.0" layoutY="221.0" mnemonicParsing="false" onAction="#removeFile" text="Remove" />
    </children>
 </AnchorPane>

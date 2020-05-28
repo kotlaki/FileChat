@@ -56,6 +56,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackConfirmDelete = callbackConfirmDelete;
     }
 
+    public CallbackConfirmReceiveFile callbackConfirmReceiveFile;
+
+    public void setCallbackConfirmReceiveFile(CallbackConfirmReceiveFile callbackConfirmReceiveFile) {
+        this.callbackConfirmReceiveFile = callbackConfirmReceiveFile;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -80,8 +86,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         callbackMsgAll.callbackMsgAll();
                     });
                 }
+                // обрабатываем подверждение о получении сервером файла
+                if (message.equals("/receiveFileOK")) {
+                    Platform.runLater(()-> {
+                        try {
+                            callbackConfirmReceiveFile.callbackConfirmReceiveFile();
+                        } catch (InterruptedException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
                 // обрабатываем подтверждение получения сервером сообщения
-                if (message.equals("/confReceive")) {
+                if (message.equals("/confReceiveAllMsg")) {
                     Platform.runLater(()-> {
                         callbackConfirm.callbackConfirm();
                     });
