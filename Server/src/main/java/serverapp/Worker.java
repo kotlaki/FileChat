@@ -95,9 +95,13 @@ public class Worker {
                 if (message.startsWith("/pm")) {
                     currentChannel = this.ctx.channel();
                     String[] strSplit = message.split("&");
+                    String[] strGetMsg = strSplit[2].split(":-");
                     if (userIsActive(strSplit[1])) {
                         MyCommandSend.sendCommand("/confReceivePrivate", currentChannel);
-//                        sendPrivateMsg(message);
+                        sendPrivateMsg(strSplit[1], strGetMsg[1]);
+                    } else {
+                        // TODO: 29.05.2020 сделать передачу сообщения клиенту
+                        System.out.println("Пользователь в данный момент не активен!!!");
                     }
                 }
 
@@ -105,10 +109,8 @@ public class Worker {
             }
     }
 
-    public void sendPrivateMsg(String message) {
-//        String nickSender = "";
-//        String[] strSplit = message.split("&");
-
+    public void sendPrivateMsg(String nickReceiver, String message) throws IOException {
+        MyCommandSend.sendCommand("/pm&" + this.getNickName() + "&" + message, getChannelReceiver(nickReceiver));
     }
 
     public void sendMsgAll(String message) throws IOException {
@@ -123,6 +125,17 @@ public class Worker {
                 MyCommandSend.sendCommand("/all&" + nick + "&" + message, o.ctx.channel());
             }
         }
+    }
+
+
+    // узнаем канал получателя
+    public Channel getChannelReceiver(String nickReceiver) {
+        for (Worker o : Server.clients) {
+            if (o.getNickName().equals(nickReceiver)) {
+                return o.getCtx().channel();
+            }
+        }
+        return null;
     }
 
     // узнаем активность пользователя

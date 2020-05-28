@@ -31,6 +31,8 @@ public class ControllerChat implements Initializable {
     public Button btnExitChat;
     public ListView<String> listUser;
 
+    public String msgOut;
+
     public static String clientListFromServer;
     public static String message;
     public static String nickReceiver;
@@ -57,34 +59,45 @@ public class ControllerChat implements Initializable {
         Controller.linkController.setCallbackClientList(this::clientList);  // получаем список активных пользователей
         Controller.linkController.setCallbackMsgAll(() -> txtChat.appendText(message + "\n"));  // ждем сообщений и выводим их
 
-//        listUser.getSelectionModel().selectionModeProperty().addListener(new ChangeListener<SelectionMode>() {
-//            @Override
-//            public void changed(ObservableValue<? extends SelectionMode> observable, SelectionMode oldValue, SelectionMode newValue) {
-//            }
-//        });
-
         listUser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 // проверяем условие чтобы не открыть приват от себя к себе
                 if (!Controller.nick.equals(newValue)) {
-                    try {
-                        nickReceiver = newValue;
-                        new ControllerPrivateChat().run(nickReceiver);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    nickReceiver = newValue;
+                    txtMsgSend.setText("Пишем " + nickReceiver + ":- ");
+                    msgOut = "/pm&" + nickReceiver;
+                    System.out.println(msgOut);
+//                    try {
+//                        new ControllerPrivateChat().run(nickReceiver);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         });
+
     }
 
     public void sendMsg(ActionEvent actionEvent) throws IOException {
-        MyCommandSend.sendCommand("/msgAll&" + txtMsgSend.getText(), Controller.currentChannel);
-        Controller.linkController.setCallbackConfirm(()->{
-            txtChat.appendText("Я пишу: " + txtMsgSend.getText() + "\n");
-            txtMsgSend.clear();
-        });
+        if (txtMsgSend.getText().startsWith("Пишем " + nickReceiver + ":-")) {
+            String[] strSplit = txtMsgSend.getText().split(":-");
+            System.out.println(strSplit.length);
+            System.out.println("0 = " + strSplit[0] + " : 1 = " + strSplit[1]);
+            MyCommandSend.sendCommand("/pm&" + nickReceiver + "&" + txtMsgSend.getText(), Controller.currentChannel);
+            Controller.linkController.setCallbackConfirmReceivePrivate(()->{
+//                txtChat.setStyle("-fx-text-inner-color: red;");
+//                txtChat.setStyle("-fx-text-fill: #00ff00;");
+                txtChat.appendText(txtMsgSend.getText() + "\n");
+                txtMsgSend.clear();
+            });
+        } else {
+            MyCommandSend.sendCommand("/msgAll&" + txtMsgSend.getText(), Controller.currentChannel);
+            Controller.linkController.setCallbackConfirm(() -> {
+                txtChat.appendText("Я пишу: " + txtMsgSend.getText() + "\n");
+                txtMsgSend.clear();
+            });
+        }
     }
 
     public void receiveMsg() {

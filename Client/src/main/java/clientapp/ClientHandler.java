@@ -94,6 +94,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         callbackMsgAll.callbackMsgAll();
                     });
                 }
+                // обрабатываем получение приватных сообщений
+                if (message.startsWith("/pm")) {
+                    String[] strSplit = message.split("&");
+                    System.out.println("nickSender = " + strSplit[1]);
+                    System.out.println("message = " + strSplit[2]);
+                }
                 // обрабатываем подверждение о получении сервером файла
                 if (message.equals("/receiveFileOK")) {
                     Platform.runLater(()-> {
