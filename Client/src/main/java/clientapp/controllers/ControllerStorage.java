@@ -1,6 +1,6 @@
 package clientapp.controllers;
 
-import clientapp.Callback;
+import clientapp.callback.Callback;
 import common.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

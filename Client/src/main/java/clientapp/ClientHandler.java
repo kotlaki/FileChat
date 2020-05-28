@@ -1,5 +1,6 @@
 package clientapp;
 
+import clientapp.callback.*;
 import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerChat;
 import clientapp.controllers.ControllerStorage;

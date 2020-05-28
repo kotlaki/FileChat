@@ -1,4 +1,4 @@
-package clientapp;
+package clientapp.callback;
 
 import java.io.IOException;
 

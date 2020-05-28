@@ -2,7 +2,10 @@ package clientapp.controllers;
 
 import common.MyCommandSend;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -51,6 +55,26 @@ public class ControllerChat implements Initializable {
         txtChat.appendText("Добро пожаловать, " + Controller.nick + "!!!\n");
         Controller.linkController.setCallbackClientList(this::clientList);  // получаем список активных пользователей
         Controller.linkController.setCallbackMsgAll(() -> txtChat.appendText(message + "\n"));  // ждем сообщений и выводим их
+
+//        listUser.getSelectionModel().selectionModeProperty().addListener(new ChangeListener<SelectionMode>() {
+//            @Override
+//            public void changed(ObservableValue<? extends SelectionMode> observable, SelectionMode oldValue, SelectionMode newValue) {
+//            }
+//        });
+
+        listUser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                // проверяем условие чтобы не открыть приват от себя к себе
+                if (!Controller.nick.equals(newValue)) {
+                    try {
+                        new ControllerPrivateChat().run(newValue);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     public void sendMsg(ActionEvent actionEvent) throws IOException {
