@@ -91,11 +91,11 @@ public class Worker {
                     MyCommandSend.sendCommand("/confReceiveAllMsg", this.ctx.channel());
                     sendMsgAll(strSplit[1]);
                 }
-
+                // блок обработки приватных сообщений
                 if (message.startsWith("/pm")) {
                     currentChannel = this.ctx.channel();
                     String[] strSplit = message.split("&");
-                    String[] strGetMsg = strSplit[2].split(":-");
+                    String[] strGetMsg = strSplit[2].split(":-");   // отделяем сообщение от остальной части
                     if (userIsActive(strSplit[1])) {
                         MyCommandSend.sendCommand("/confReceivePrivate", currentChannel);
                         sendPrivateMsg(strSplit[1], strGetMsg[1]);
@@ -109,10 +109,12 @@ public class Worker {
             }
     }
 
+    // метод отправки приватного сообщения получателю
     public void sendPrivateMsg(String nickReceiver, String message) throws IOException {
         MyCommandSend.sendCommand("/pm&" + this.getNickName() + "&" + message, getChannelReceiver(nickReceiver));
     }
 
+    // метод отправки сообщений для всех
     public void sendMsgAll(String message) throws IOException {
         String nick = "";
         for (Worker o : Server.clients) {

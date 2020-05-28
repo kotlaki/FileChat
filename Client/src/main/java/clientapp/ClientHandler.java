@@ -70,6 +70,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackConfirmReceivePrivate = callbackConfirmReceivePrivate;
     }
 
+    public CallbackPrivateMsgReceive callbackPrivateMsgReceive;
+
+    public void setCallbackPrivateMsgReceive(CallbackPrivateMsgReceive callbackPrivateMsgReceive) {
+        this.callbackPrivateMsgReceive = callbackPrivateMsgReceive;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -98,7 +104,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 if (message.startsWith("/pm")) {
                     String[] strSplit = message.split("&");
                     System.out.println("nickSender = " + strSplit[1]);
+                    ControllerChat.nickSender = strSplit[1];
                     System.out.println("message = " + strSplit[2]);
+                    ControllerChat.message = strSplit[2];
+                            Platform.runLater(()-> {
+                        try {
+                            callbackPrivateMsgReceive.callbackPrivateMsgReceive();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
                 // обрабатываем подверждение о получении сервером файла
                 if (message.equals("/receiveFileOK")) {
