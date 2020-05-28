@@ -91,8 +91,24 @@ public class Worker {
                     MyCommandSend.sendCommand("/confReceiveAllMsg", this.ctx.channel());
                     sendMsgAll(strSplit[1]);
                 }
+
+                if (message.startsWith("/pm")) {
+                    currentChannel = this.ctx.channel();
+                    String[] strSplit = message.split("&");
+                    if (userIsActive(strSplit[1])) {
+                        MyCommandSend.sendCommand("/confReceivePrivate", currentChannel);
+//                        sendPrivateMsg(message);
+                    }
+                }
+
                 System.out.println("From client = " + message);
             }
+    }
+
+    public void sendPrivateMsg(String message) {
+//        String nickSender = "";
+//        String[] strSplit = message.split("&");
+
     }
 
     public void sendMsgAll(String message) throws IOException {
@@ -107,6 +123,14 @@ public class Worker {
                 MyCommandSend.sendCommand("/all&" + nick + "&" + message, o.ctx.channel());
             }
         }
+    }
+
+    // узнаем активность пользователя
+    public boolean userIsActive(String nick) {
+        for (Worker o: Server.clients) {
+            if (o.getNickName().equals(nick)) return true;
+        }
+        return false;
     }
 
     // собираем строку со списком активных пользователей для отправки клиентам

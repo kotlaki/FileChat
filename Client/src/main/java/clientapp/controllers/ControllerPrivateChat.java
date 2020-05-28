@@ -1,5 +1,6 @@
 package clientapp.controllers;
 
+import common.MyCommandSend;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,13 +25,13 @@ public class ControllerPrivateChat implements Initializable {
 
     public static List<ControllerPrivateChat> listPrivateChat = new ArrayList<>();
 
-    public void run(String nick) throws IOException {
+    public void run(String nickReceiver) throws IOException {
         FXMLLoader fxmlLoaderPrivate = new FXMLLoader();
         fxmlLoaderPrivate.setLocation(getClass().getResource("/private.fxml"));
         Stage stage = new Stage();
         Parent root = fxmlLoaderPrivate.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Приватный чат с " + nick);
+        stage.setTitle("Приватный чат с " + nickReceiver);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.showAndWait();
@@ -38,13 +39,18 @@ public class ControllerPrivateChat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        listPrivateChat.add(this);  // добавляем текущий чат в список активных чатов
     }
 
     public void privateExit(ActionEvent actionEvent) {
     }
 
-    public void privateSend(ActionEvent actionEvent) {
+    public void privateSend(ActionEvent actionEvent) throws IOException {
+        MyCommandSend.sendCommand("/pm&" + ControllerChat.nickReceiver + "&" + txtPrivateSend.getText(), Controller.currentChannel);
+        Controller.linkController.setCallbackConfirmReceivePrivate(()->{
+            txtPrivateChat.appendText("Я пишу: " + txtPrivateSend.getText() + "\n");
+            txtPrivateSend.clear();
+        });
     }
 
     public void privateSendFile(ActionEvent actionEvent) {

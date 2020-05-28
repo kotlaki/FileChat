@@ -4,6 +4,7 @@ import clientapp.callback.*;
 import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerChat;
 import clientapp.controllers.ControllerStorage;
+import com.sun.xml.internal.bind.v2.TODO;
 import common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -63,6 +64,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         this.callbackConfirmReceiveFile = callbackConfirmReceiveFile;
     }
 
+    public CallbackConfirmReceivePrivate callbackConfirmReceivePrivate;
+
+    public void setCallbackConfirmReceivePrivate(CallbackConfirmReceivePrivate callbackConfirmReceivePrivate) {
+        this.callbackConfirmReceivePrivate = callbackConfirmReceivePrivate;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
@@ -101,6 +108,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 if (message.equals("/confReceiveAllMsg")) {
                     Platform.runLater(()-> {
                         callbackConfirm.callbackConfirm();
+                    });
+                }
+                // обрабатываем подтверждение получение приватного сообщения
+                if (message.equals("/confReceivePrivate")) {
+                    Platform.runLater(()-> {
+                        callbackConfirmReceivePrivate.callbackConfirmReceivePrivate();
                     });
                 }
                 // обрабатываем подврждение об удалении файла на сервере

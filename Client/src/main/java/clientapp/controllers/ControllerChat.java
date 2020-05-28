@@ -33,6 +33,7 @@ public class ControllerChat implements Initializable {
 
     public static String clientListFromServer;
     public static String message;
+    public static String nickReceiver;
 
     public ControllerChat() {
 
@@ -68,7 +69,8 @@ public class ControllerChat implements Initializable {
                 // проверяем условие чтобы не открыть приват от себя к себе
                 if (!Controller.nick.equals(newValue)) {
                     try {
-                        new ControllerPrivateChat().run(newValue);
+                        nickReceiver = newValue;
+                        new ControllerPrivateChat().run(nickReceiver);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

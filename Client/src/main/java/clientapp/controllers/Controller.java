@@ -77,6 +77,10 @@ public class Controller extends Application {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirmReceiveFile(callbackConfirmReceiveFile);
     }
 
+    public void setCallbackConfirmReceivePrivate(CallbackConfirmReceivePrivate callbackConfirmReceivePrivate) {
+        currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirmReceivePrivate(callbackConfirmReceivePrivate);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader();
