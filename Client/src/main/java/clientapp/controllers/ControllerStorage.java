@@ -12,10 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -37,6 +34,9 @@ public class ControllerStorage implements Initializable {
     public ProgressBar progressBar;
     public Button btnDeleteFile;
     public Button btnRemoveFile;
+    public Button btnLvlUp;
+    public Button btnNewFolder;
+
 
 
     public static String msgFromServer;
@@ -55,7 +55,7 @@ public class ControllerStorage implements Initializable {
         Stage stage = new Stage();
         Parent root = fxmlLoaderRegistration.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Регистрация");
+        stage.setTitle("Моё файловое хранилище");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.showAndWait();
@@ -63,6 +63,14 @@ public class ControllerStorage implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        btnRightToLeft.setTooltip(new Tooltip("Копировать на компьютер"));
+        btnLeftToRight.setTooltip(new Tooltip("Копировать в хранилище"));
+        btnDeleteFile.setTooltip(new Tooltip("Удалить файл"));
+        btnLvlUp.setTooltip(new Tooltip("На уровень вверх"));
+        btnNewFolder.setTooltip(new Tooltip("Создать новую папку"));
+        btnRefreshFile.setTooltip(new Tooltip("Обновить список файлов"));
+        btnRemoveFile.setTooltip(new Tooltip("Перенести файл"));
+
         try {
             refreshFile();
         } catch (IOException e) {
@@ -186,5 +194,11 @@ public class ControllerStorage implements Initializable {
             Files.delete(Paths.get("client_storage/" + getNameFileToServer));
             refreshFile();
         }
+    }
+
+    public void newFolder(ActionEvent actionEvent) {
+    }
+
+    public void lvlUp(ActionEvent actionEvent) {
     }
 }
