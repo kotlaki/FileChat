@@ -14,7 +14,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +41,10 @@ public class ControllerStorage implements Initializable {
 
 
 
+
     public static String msgFromServer;
+
+    public String nameNewFolder;
     public String getNameFileToServer;
     public String tempNameFileToServer;
     public String getNameFileFromServer;
@@ -146,7 +151,7 @@ public class ControllerStorage implements Initializable {
 //            System.out.println(Arrays.toString(strSplit));
         Platform.runLater(() -> {
             // сплитим полученный массив
-            String[] strSplit = msgFromServer.split(" ");
+            String[] strSplit = msgFromServer.split("&&");
             // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
             String[] result = new String[strSplit.length - 1];
             System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
@@ -197,6 +202,18 @@ public class ControllerStorage implements Initializable {
     }
 
     public void newFolder(ActionEvent actionEvent) {
+        TextField txtNewFolder = new TextField("Введите название тяпки");
+        Button createNewFolder = new Button("Создать");
+        HBox hBox = new HBox();
+        hBox.getChildren().add(txtNewFolder);
+        hBox.getChildren().add(createNewFolder);
+        Scene secondScene = new Scene(hBox, 230, 40);
+        Stage stageNewFolder = new Stage();
+        stageNewFolder.setTitle("Новая папка");
+        stageNewFolder.setScene(secondScene);
+        stageNewFolder.initStyle(StageStyle.UTILITY);
+        stageNewFolder.show();
+        nameNewFolder = txtNewFolder.getText();
     }
 
     public void lvlUp(ActionEvent actionEvent) {

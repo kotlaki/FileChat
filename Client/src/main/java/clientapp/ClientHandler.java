@@ -4,7 +4,6 @@ import clientapp.callback.*;
 import clientapp.controllers.Controller;
 import clientapp.controllers.ControllerChat;
 import clientapp.controllers.ControllerStorage;
-import com.sun.xml.internal.bind.v2.TODO;
 import common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
