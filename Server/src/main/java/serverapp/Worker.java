@@ -64,7 +64,7 @@ public class Worker {
                 }
                 // блок обработки запроса и отправки списка файлов клиенту
                 if (message.equals("/req_list")) {
-                    MyCommandSend.sendCommand("/req_list " + preSplit(), this.ctx.channel());
+                    MyCommandSend.sendCommand("/req_list&&" + preSplit(), this.ctx.channel());
                 }
                 // блок удаления файлов на сервере
                 if (message.startsWith("/delete")) {
@@ -162,7 +162,7 @@ public class Worker {
         StringBuilder listSB = new StringBuilder();
         List<String> tmpList = MyFileList.listFile("server_storage");
         for (String o : tmpList) {
-            listSB.append(o).append(" ");
+            listSB.append(o).append("&&");
         }
         return listSB.toString();
     }

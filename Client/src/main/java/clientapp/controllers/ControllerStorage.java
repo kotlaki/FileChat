@@ -139,14 +139,9 @@ public class ControllerStorage implements Initializable {
     }
 
     public void refreshListServer() throws IOException {
-        //            IntStream.range(0, strSplit.length)
-//                    .filter(i -> i != 0)
-//                    .map(i -> Integer.parseInt(strSplit[i]))
-//                    .toArray();
-//            System.out.println(Arrays.toString(strSplit));
         Platform.runLater(() -> {
             // сплитим полученный массив
-            String[] strSplit = msgFromServer.split(" ");
+            String[] strSplit = msgFromServer.split("&&");
             // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
             String[] result = new String[strSplit.length - 1];
             System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
