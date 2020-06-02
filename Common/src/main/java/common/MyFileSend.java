@@ -22,6 +22,6 @@ public class MyFileSend {
         buf.writeBytes(filenameBytes);              // передаем имя файла в buf
         buf.writeLong(Files.size(path));           // передаем размер файла в buf
         channel.writeAndFlush(buf);
-        ChannelFuture transferOperationFuture = channel.writeAndFlush(region);  // передаем файл в канал
+        channel.writeAndFlush(region);  // передаем файл в канал
     }
 }

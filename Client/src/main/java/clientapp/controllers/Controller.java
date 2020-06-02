@@ -149,7 +149,6 @@ public class Controller extends Application {
         MyCommandSend.sendCommand(str, ctx.channel());
         // ждем ответа сервера
         setCallbackAuth(()->{
-            System.out.println("nick = " + nick);
             if (nick != null) {
                 pStage.close();
                 new ControllerChat().run();
