@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="411.0" prefWidth="510.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.ControllerChat">
+   <children>
+      <TextArea fx:id="txtChat" editable="false" focusTraversable="false" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="361.0" />
+      <TextArea fx:id="txtMsgSend" layoutX="14.0" layoutY="227.0" prefHeight="175.0" prefWidth="361.0" />
+      <Button fx:id="btnMsgSend" defaultButton="true" layoutX="403.0" layoutY="295.0" mnemonicParsing="false" onAction="#sendMsg" prefHeight="51.0" prefWidth="82.0" text="Отправить" wrapText="true" />
+      <Button fx:id="btnOpenStorage" layoutX="403.0" layoutY="227.0" mnemonicParsing="false" onAction="#openStorage" prefHeight="60.0" prefWidth="82.0" text="Открыть хранилище файлов" textAlignment="CENTER" textOverrun="CLIP" wrapText="true" />
+      <Button fx:id="btnExitChat" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" layoutX="403.0" layoutY="355.0" mnemonicParsing="false" onAction="#exitChat" prefHeight="42.0" prefWidth="82.0" text="Выход" />
+      <ListView fx:id="listUser" layoutX="385.0" layoutY="14.0" prefHeight="200.0" prefWidth="118.0" />
+   </children>
+</AnchorPane>
