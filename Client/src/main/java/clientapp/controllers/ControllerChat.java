@@ -29,8 +29,6 @@ public class ControllerChat implements Initializable {
     public Button btnExitChat;
     public ListView<String> listUser;
 
-    public String msgOut;
-
     public static String clientListFromServer;
     public static String message;
     public static String nickReceiver;
@@ -68,8 +66,6 @@ public class ControllerChat implements Initializable {
                 if (!Controller.nick.equals(newValue)) {
                     nickReceiver = newValue;
                     txtMsgSend.setText("Пишем " + nickReceiver + ":- ");
-                    msgOut = "/pm&" + nickReceiver;
-                    System.out.println(msgOut);
                 }
             }
         });
@@ -80,12 +76,9 @@ public class ControllerChat implements Initializable {
         // условие для отправки привата
         if (txtMsgSend.getText().startsWith("Пишем " + nickReceiver + ":-")) {
             String[] strSplit = txtMsgSend.getText().split(":-");
-            System.out.println(strSplit.length);
             System.out.println("0 = " + strSplit[0] + " : 1 = " + strSplit[1]);
             MyCommandSend.sendCommand("/pm&" + nickReceiver + "&" + txtMsgSend.getText(), Controller.currentChannel);
             Controller.linkController.setCallbackConfirmReceivePrivate(()->{
-//                txtChat.setStyle("-fx-text-inner-color: red;");
-//                txtChat.setStyle("-fx-text-fill: #00ff00;");
                 txtChat.appendText(txtMsgSend.getText() + "\n");
                 txtMsgSend.clear();
             });

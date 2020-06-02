@@ -1,6 +1,5 @@
 package clientapp.controllers;
 
-import clientapp.callback.Callback;
 import common.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -13,7 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,30 +22,18 @@ import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class ControllerStorage implements Initializable {
-    public AnchorPane test;
     public ListView<String> listFileClient;
     public ListView<String> listFileServer;
     public Button btnCancelStorage;
     public Button btnLeftToRight;
     public Button btnRightToLeft;
     public Button btnRefreshFile;
-    public ProgressBar progressBar;
     public Button btnDeleteFile;
     public Button btnRemoveFile;
-    public Button btnLvlUp;
-    public Button btnNewFolder;
-
-
 
     public static String msgFromServer;
     public String getNameFileToServer;
-    public String tempNameFileToServer;
     public String getNameFileFromServer;
-    public String tempNameFileFromServer;
-    public int memoryIndex;
-
-    MyFileReceive myFileReceive;
-    Callback callback;
 
     public void run() throws IOException {
         FXMLLoader fxmlLoaderRegistration = new FXMLLoader();
@@ -66,8 +52,6 @@ public class ControllerStorage implements Initializable {
         btnRightToLeft.setTooltip(new Tooltip("Копировать на компьютер"));
         btnLeftToRight.setTooltip(new Tooltip("Копировать в хранилище"));
         btnDeleteFile.setTooltip(new Tooltip("Удалить файл"));
-        btnLvlUp.setTooltip(new Tooltip("На уровень вверх"));
-        btnNewFolder.setTooltip(new Tooltip("Создать новую папку"));
         btnRefreshFile.setTooltip(new Tooltip("Обновить список файлов"));
         btnRemoveFile.setTooltip(new Tooltip("Перенести файл"));
 
@@ -80,22 +64,14 @@ public class ControllerStorage implements Initializable {
         listFileClient.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                System.out.println("to Storage from client = " + newValue);
                 getNameFileToServer = newValue;
-                // TODO разобраться с определением фокуса модели
-//                System.out.println("CLIENT IS FOCUS = " + listFileServer.isFocused());
-//                System.out.println("SERVER IS FOCUS = " + listFileServer.isFocused());
                 getNameFileFromServer = null;
             }
         });
 
         // отслеживаем и вытаскиваем название имени файла при его выделении в списке сервера
         listFileServer.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("to Storage from server = " + newValue);
             getNameFileFromServer = newValue;
-            // TODO разобраться с определением фокуса модели
-//            System.out.println("SERVER IS FOCUS = " + listFileServer.isFocused());
-//            System.out.println("CLIENT IS FOCUS = " + listFileClient.isFocused());
             getNameFileToServer = null;
         });
     }
@@ -103,23 +79,13 @@ public class ControllerStorage implements Initializable {
     public void sendFileToServer() throws IOException, InterruptedException {
 
         MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
-        Controller.linkController.setCallbackConfirmReceiveFile(()->{
-            progressBar.progressProperty().set(1);
-            Thread.sleep(1000);
-            progressBar.progressProperty().setValue(0);
-            refreshFile();
-        });
+        Controller.linkController.setCallbackConfirmReceiveFile(this::refreshFile);
     }
 
     public void receiveFileFromServer(ActionEvent actionEvent) throws IOException, InterruptedException {
-//        Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
         MyCommandSend.sendCommand("/fr " + "server_storage/" + getNameFileFromServer, Controller.currentChannel);
         // как только получаем полностью файл вызывается обновление списков файлов с помощью callback
         Controller.linkController.setCallbackReceive(this::refreshFile);
-
-        progressBar.progressProperty().set(1);
-        Thread.sleep(1000);
-        progressBar.progressProperty().setValue(0);
     }
 
     public void cancelStorage(ActionEvent actionEvent) {
@@ -129,13 +95,9 @@ public class ControllerStorage implements Initializable {
     }
 
     public void refreshListClient() throws IOException {
-        System.out.println("focus id client begin = " + listFileClient.getFocusModel().getFocusedIndex());
         // вытаскиваем в ListView данные из List и выводим
         ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile("client_storage"));
         listFileClient.setItems(files);
-//        System.out.println("focus id client end = " + listFileClient.getFocusModel().getFocusedIndex());
-        // устанавливаем фокус на первый элемент в списке
-//        listFileClient.getFocusModel().focus(0);
     }
 
     public void refreshListServer() throws IOException {
@@ -173,7 +135,6 @@ public class ControllerStorage implements Initializable {
         }
         // переносим файл с сервера на клиента
         if (getNameFileFromServer != null) {
-//            Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
            MyCommandSend.sendCommand("/fr " + "server_storage/" + getNameFileFromServer, Controller.currentChannel);
             Controller.linkController.setCallbackReceive(this::deleteFile);
         }
@@ -189,11 +150,5 @@ public class ControllerStorage implements Initializable {
             Files.delete(Paths.get("client_storage/" + getNameFileToServer));
             refreshFile();
         }
-    }
-
-    public void newFolder(ActionEvent actionEvent) {
-    }
-
-    public void lvlUp(ActionEvent actionEvent) {
     }
 }

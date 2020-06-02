@@ -34,7 +34,7 @@ public class Controller extends Application {
     public Hyperlink linkRegistration;
     public boolean isBtnReg = false;
 
-    public ChannelFuture f;     // ???
+    public ChannelFuture f;
     public static Channel currentChannel;
     public static String nick;
     public static String freeText;
@@ -100,11 +100,6 @@ public class Controller extends Application {
         linkController.setpStage(primaryStage);         // сеттером передаем primaryStage для использования вне метода start()
     }
 
-
-//    public Stage getpStage() {
-//        return pStage;
-//    }
-
     public void setpStage(Stage pStage) {
         this.pStage = pStage;
     }
@@ -140,7 +135,6 @@ public class Controller extends Application {
                 }
             }
         });
-//        thread.setDaemon(true);
         thread.start();
     }
 

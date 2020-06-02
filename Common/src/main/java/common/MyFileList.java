@@ -15,5 +15,10 @@ public class MyFileList {
                 .map(p->p.getFileName().toString())
                 .collect(Collectors.toList());
     }
+//public static List<String> listFile(String path) throws IOException {
+//    return Files.list(Paths.get(path))
+//            .map(p->p.getFileName().toString())
+//            .collect(Collectors.toList());
+//}
 
 }
