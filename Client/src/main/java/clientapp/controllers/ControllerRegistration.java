@@ -2,15 +2,22 @@ package clientapp.controllers;
 
 import common.MyCommandSend;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class ControllerRegistration {
+public class ControllerRegistration implements Initializable {
 
     public TextField txtNickRegistration;
     public TextField txtLoginRegistration;
@@ -31,6 +38,31 @@ public class ControllerRegistration {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.showAndWait();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // обрабатываем нажатие tab для навигации по форме
+        new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode code = event.getCode();
+
+                if (code == KeyCode.TAB && !event.isShiftDown() && !event.isControlDown()) {
+                    event.consume();
+                    Node node = (Node) event.getSource();
+                    KeyEvent newEvent
+                            = new KeyEvent(event.getSource(),
+                            event.getTarget(), event.getEventType(),
+                            event.getCharacter(), event.getText(),
+                            event.getCode(), event.isShiftDown(),
+                            true, event.isAltDown(),
+                            event.isMetaDown());
+
+                    node.fireEvent(newEvent);
+                }
+            }
+        };
     }
 
     public void btnAddNewUser(ActionEvent actionEvent) throws Exception {
@@ -59,4 +91,5 @@ public class ControllerRegistration {
         Stage stage = (Stage) btnCancelRegistration.getScene().getWindow();
         stage.close();
     }
+
 }

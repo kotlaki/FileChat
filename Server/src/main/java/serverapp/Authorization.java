@@ -29,7 +29,6 @@ public class Authorization {
                         if (o.getNickName().equals(nickName)) {
                             equalsNick = true;
                             MyCommandSend.sendCommand("/errorAuth&Повторный вход пользователя!!!", ctx.channel());
-//                            ctx.channel().writeAndFlush(Unpooled.copiedBuffer("/close", CharsetUtil.UTF_8));
                             break;
                         }
                     }
