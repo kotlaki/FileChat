@@ -48,7 +48,7 @@ public class Worker {
 
         // приемка файла
         if (str.startsWith("/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
-            MyFileReceive.receiveFile(in, "server_storage/");
+            MyFileReceive.receiveFile(in, "server_storage/" + getNickName() + "/");
             if (MyFileReceive.currentState == MyFileReceive.State.IDLE){
                 MyCommandSend.sendCommand("/receiveFileOK", this.ctx.channel());
             }
@@ -69,7 +69,7 @@ public class Worker {
                 // блок удаления файлов на сервере
                 if (message.startsWith("/delete")) {
                     String[] strSplit = message.split(" ");
-                    Files.delete(Paths.get("server_storage/" + strSplit[1]));
+                    Files.delete(Paths.get("server_storage/" + getNickName() + "/" + strSplit[1]));
                     System.out.println("Файл " + strSplit[1] + " удален пользователем " + nickName + "!!!");
                     MyCommandSend.sendCommand("/deleteOK", this.ctx.channel());
                 }
@@ -160,7 +160,7 @@ public class Worker {
     // составляем строку списка файлов для отправки клиенту
     public String preSplit() throws IOException {
         StringBuilder listSB = new StringBuilder();
-        List<String> tmpList = MyFileList.listFile("server_storage");
+        List<String> tmpList = MyFileList.listFile("server_storage/" + getNickName());
         for (String o : tmpList) {
             listSB.append(o).append("&&");
         }

@@ -197,7 +197,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     String[] strSplit = message.split("&");
                     Controller.freeText = strSplit[1];
                     Platform.runLater(()->{
-                        callbackReg.callbackReg();
+                        try {
+                            callbackReg.callbackReg();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     });
                 }
             }

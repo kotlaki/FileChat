@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Authorization {
@@ -56,6 +57,8 @@ public class Authorization {
         try {
             String[] token = str.split(" ");
             result = SqlWorker.addUser(token[1], token[2], token[3], token[4]);
+            // добавляем в файловое хранилище папку для нового пользователя
+            new File("server_storage/" + token[3]).mkdirs();
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
             System.out.println("При регистрации нового пользователя пришли не валидные данные!!!");

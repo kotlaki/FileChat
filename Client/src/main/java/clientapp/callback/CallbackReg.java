@@ -1,5 +1,5 @@
 package clientapp.callback;
 
 public interface CallbackReg {
-    public void callbackReg();
+    public void callbackReg() throws Exception;
 }

@@ -116,7 +116,7 @@ public class Controller extends Application {
                 Bootstrap b = new Bootstrap();
                 b.group(work)
                         .channel(NioSocketChannel.class)
-                        .remoteAddress(new InetSocketAddress("192.168.0.105", 8189))
+                        .remoteAddress(new InetSocketAddress("localhost", 8189))
                         .handler(new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {

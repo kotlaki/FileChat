@@ -33,7 +33,7 @@ public class ControllerRegistration {
         stage.showAndWait();
     }
 
-    public void btnAddNewUser(ActionEvent actionEvent) throws IOException {
+    public void btnAddNewUser(ActionEvent actionEvent) throws Exception {
         if (txtLoginRegistration.getText().equals("") || txtNickRegistration.getText().equals("")
                 || txtPasswordRegistration.getText().equals("") || txtPasswordConfirmRegistration.getText().equals("")) {
             Alert errorAuth = new Alert(Alert.AlertType.WARNING);
@@ -50,11 +50,12 @@ public class ControllerRegistration {
                 errorAuth.setHeaderText("Результат:");
                 errorAuth.setContentText(Controller.freeText);
                 errorAuth.showAndWait();
+                btnCancelRegistration();
             });
         }
     }
 
-    public void btnCancelRegistration(ActionEvent actionEvent) throws Exception {
+    public void btnCancelRegistration() throws Exception {
         Stage stage = (Stage) btnCancelRegistration.getScene().getWindow();
         stage.close();
     }
