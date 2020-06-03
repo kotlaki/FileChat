@@ -99,11 +99,6 @@ public class Controller extends Application {
         linkController.setpStage(primaryStage);         // сеттером передаем primaryStage для использования вне метода start()
     }
 
-
-//    public Stage getpStage() {
-//        return pStage;
-//    }
-
     public void setpStage(Stage pStage) {
         this.pStage = pStage;
     }

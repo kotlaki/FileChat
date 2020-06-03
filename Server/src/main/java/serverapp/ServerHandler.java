@@ -2,19 +2,14 @@ package serverapp;
 
 import common.*;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -28,14 +23,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private String nickName;
     private ChannelHandlerContext ctx;
-    private boolean isAuth;
     public Channel currentChannel;
 
     public ServerHandler(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException, InterruptedException {
         this.nickName = nickName;
         this.ctx = ctx;
-        this.isAuth = isAuth;
-
         // если ник != null значит авторизация прошла успешно
         if (nickName != null && isAuth) {
             Server.subscribe(this);     // помещаем информацию о пользователе в vector clients
@@ -53,10 +45,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     public ChannelHandlerContext getCtx() {
         return ctx;
-    }
-
-    public ServerHandler(String nickName) {
-        this.nickName = nickName;
     }
 
     @Override
