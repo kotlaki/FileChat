@@ -1,9 +1,6 @@
 package serverapp;
 
-import common.MyCommandReceive;
-import common.MyCommandSend;
-import common.MyFileReceive;
-import common.MyFileSend;
+import common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
@@ -14,9 +11,11 @@ import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 /*
     /fr - file receive - получение файла
@@ -27,13 +26,34 @@ import java.util.Arrays;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
-    public Worker worker;
+    private String nickName;
+    private ChannelHandlerContext ctx;
+    private boolean isAuth;
+    public Channel currentChannel;
 
     public ServerHandler(String nickName, ChannelHandlerContext ctx, boolean isAuth) throws IOException, InterruptedException {
-        worker = new Worker(nickName, ctx, isAuth);
+        this.nickName = nickName;
+        this.ctx = ctx;
+        this.isAuth = isAuth;
+
+        // если ник != null значит авторизация прошла успешно
+        if (nickName != null && isAuth) {
+            Server.subscribe(this);     // помещаем информацию о пользователе в vector clients
+            MyCommandSend.sendCommand("/authOK " + nickName, ctx.channel());    // посылаем клиенту ник авторизованого пользователя
+            Thread.sleep(500);  // делаем интервал м\у двумя служебными сообщениями
+            for (ServerHandler o : Server.clients) {
+                MyCommandSend.sendCommand("/respClientList " + clientList(), o.getCtx().channel()); // пробегаем клиентов и рассылаем им обновленный список активных пользователей
+            }
+        }
     }
 
-    private String nickName;
+    public String getNickName() {
+        return nickName;
+    }
+
+    public ChannelHandlerContext getCtx() {
+        return ctx;
+    }
 
     public ServerHandler(String nickName) {
         this.nickName = nickName;
@@ -42,7 +62,132 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
-        worker.workMsg(ctx, in);
+        workMsg(ctx, in);
+    }
+
+    public void workMsg(ChannelHandlerContext ctx, ByteBuf in) throws IOException {
+
+        String str = in.toString(CharsetUtil.UTF_8);
+
+        // приемка файла
+        if (str.startsWith("/file") || MyFileReceive.currentState == MyFileReceive.State.FILE) {
+            MyFileReceive.receiveFile(in, "server_storage/" + getNickName() + "/");
+            if (MyFileReceive.currentState == MyFileReceive.State.IDLE){
+                MyCommandSend.sendCommand("/receiveFileOK", this.ctx.channel());
+            }
+        } else
+            // приемка сообщений
+            if (str.startsWith("/message") || MyCommandReceive.currentState == MyCommandReceive.State.MESSAGE) {
+                String message = MyCommandReceive.receiveCommand(in);
+                // обработка запроса на файл с последующей передачей файла клиенту
+                if (message.startsWith("/fr")) {
+                    String[] strSplit = str.split(" ");
+                    MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel());
+                    // ПОДУМАТЬ НА СЧЕТ CALLBACK В ЭТОМ МЕСТЕ???!!!!
+                }
+                // блок обработки запроса и отправки списка файлов клиенту
+                if (message.equals("/req_list")) {
+                    MyCommandSend.sendCommand("/req_list&&" + preSplit(), this.ctx.channel());
+                }
+                // блок удаления файлов на сервере
+                if (message.startsWith("/delete")) {
+                    String[] strSplit = message.split(" ");
+                    Files.delete(Paths.get("server_storage/" + getNickName() + "/" + strSplit[1]));
+                    System.out.println("Файл " + strSplit[1] + " удален пользователем " + nickName + "!!!");
+                    MyCommandSend.sendCommand("/deleteOK", this.ctx.channel());
+                }
+                // блок откючения клиента
+                if (message.startsWith("/authOFF")) {
+                    Server.unsubscribe(this);
+                    ctx.channel().close();
+                    for (ServerHandler o : Server.clients) {
+                        MyCommandSend.sendCommand("/respClientList " + clientList(), o.getCtx().channel());
+                    }
+                }
+                // блок обработки запроса списка активных пользователей и отправки их клиенту
+//                    if (message.equals("/clientList")) {
+//                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
+//                    }
+                if (message.startsWith("/msgAll")) {
+                    currentChannel = this.ctx.channel();
+                    String[] strSplit = message.split("&");
+                    MyCommandSend.sendCommand("/confReceiveAllMsg", this.ctx.channel());
+                    sendMsgAll(strSplit[1]);
+                }
+                // блок обработки приватных сообщений
+                if (message.startsWith("/pm")) {
+                    currentChannel = this.ctx.channel();
+                    String[] strSplit = message.split("&");
+                    String[] strGetMsg = strSplit[2].split(":-");   // отделяем сообщение от остальной части
+                    if (userIsActive(strSplit[1])) {
+                        MyCommandSend.sendCommand("/confReceivePrivate", currentChannel);
+                        sendPrivateMsg(strSplit[1], strGetMsg[1]);
+                    } else {
+                        // TODO: 29.05.2020 сделать передачу сообщения клиенту
+                        System.out.println("Пользователь в данный момент не активен!!!");
+                    }
+                }
+
+                System.out.println("From client = " + message);
+            }
+    }
+
+    // метод отправки приватного сообщения получателю
+    public void sendPrivateMsg(String nickReceiver, String message) throws IOException {
+        MyCommandSend.sendCommand("/pm&" + this.getNickName() + "&" + message, getChannelReceiver(nickReceiver));
+    }
+
+    // метод отправки сообщений для всех
+    public void sendMsgAll(String message) throws IOException {
+        String nick = "";
+        for (ServerHandler o : Server.clients) {
+            if (o.getCtx().channel() == currentChannel) {
+                nick = o.getNickName();
+            }
+        }
+        for (ServerHandler o : Server.clients) {
+            if (o.getCtx().channel() != currentChannel) {
+                MyCommandSend.sendCommand("/all&" + nick + "&" + message, o.ctx.channel());
+            }
+        }
+    }
+
+
+    // узнаем канал получателя
+    public Channel getChannelReceiver(String nickReceiver) {
+        for (ServerHandler o : Server.clients) {
+            if (o.getNickName().equals(nickReceiver)) {
+                return o.getCtx().channel();
+            }
+        }
+        return null;
+    }
+
+    // узнаем активность пользователя
+    public boolean userIsActive(String nick) {
+        for (ServerHandler o: Server.clients) {
+            if (o.getNickName().equals(nick)) return true;
+        }
+        return false;
+    }
+
+    // собираем строку со списком активных пользователей для отправки клиентам
+    public String clientList() {
+        StringBuilder clientSB = new StringBuilder();
+        for (ServerHandler o : Server.clients) {
+            clientSB.append(o.getNickName()).append(" ");
+        }
+        return clientSB.toString();
+    }
+
+    // составляем строку списка файлов для отправки клиенту
+    public String preSplit() throws IOException {
+        StringBuilder listSB = new StringBuilder();
+        List<String> tmpList = MyFileList.listFile("server_storage/" + getNickName());
+        for (String o : tmpList) {
+            listSB.append(o).append("&&");
+        }
+        return listSB.toString();
     }
 
     @Override

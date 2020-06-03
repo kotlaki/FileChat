@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class Server {
-    public static Vector<Worker> clients = new Vector<>();  // тут храним информацию о авторизированных пользователях
+    public static Vector<ServerHandler> clients = new Vector<>();  // тут храним информацию о авторизированных пользователях
     public void run() {
         EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup work = new NioEventLoopGroup();
@@ -40,11 +40,11 @@ public class Server {
         }
     }
 
-    public static void subscribe(Worker client) throws IOException {
+    public static void subscribe(ServerHandler client) throws IOException {
         clients.add(client);    // добавляем в коллекцию авторезированного пользователя
     }
 
-    public static void unsubscribe(Worker client) {
+    public static void unsubscribe(ServerHandler client) {
         clients.remove(client); // удаляем из коллекции отключившегося пользователя
     }
 

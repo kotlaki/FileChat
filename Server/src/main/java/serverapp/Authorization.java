@@ -25,7 +25,7 @@ public class Authorization {
                     ctx.close();
                 } else {
                     // пользователь с таким ником уже вошел?
-                    for (Worker o: Server.clients) {
+                    for (ServerHandler o: Server.clients) {
                         if (o.getNickName().equals(nickName)) {
                             equalsNick = true;
                             MyCommandSend.sendCommand("/errorAuth&Повторный вход пользователя!!!", ctx.channel());
