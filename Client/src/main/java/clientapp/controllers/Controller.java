@@ -1,7 +1,6 @@
 package clientapp.controllers;
 
 import clientapp.*;
-import clientapp.callback.*;
 import common.MyCommandSend;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -46,42 +45,42 @@ public class Controller extends Application {
     }
 
     // колбэк для входящего пакета аутентификации
-    public void setCallbackAuth(CallbackAuth callbackAuth) {
+    public void setCallbackAuth(Callback callbackAuth) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackAuth(callbackAuth);
     }
 
     // колбэк для входящего пакета регистрации нового пользователя
-    public void setCallbackReg(CallbackReg callbackReg) {
+    public void setCallbackReg(Callback callbackReg) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackReg(callbackReg);
     }
 
     // колбэк для входящего пакета со списком активных пользователей
-    public void setCallbackClientList(CallbackClientList callbackClientList) {
+    public void setCallbackClientList(Callback callbackClientList) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackClientList(callbackClientList);
     }
 
     // колбэк для потверждений о получении сообщений
-    public void setCallbackConfirm(CallbackConfirm callbackConfirm) {
+    public void setCallbackConfirm(Callback callbackConfirm) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirm(callbackConfirm);
     }
 
-    public void setCallbackMsgAll(CallbackMsgAll callbackMsgAll) {
+    public void setCallbackMsgAll(Callback callbackMsgAll) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackMsgAll(callbackMsgAll);
     }
 
-    public void setCallbackConfirmDelete(CallbackConfirmDelete callbackConfirmDelete) {
+    public void setCallbackConfirmDelete(Callback callbackConfirmDelete) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirmDelete(callbackConfirmDelete);
     }
 
-    public void setCallbackConfirmReceiveFile(CallbackConfirmReceiveFile callbackConfirmReceiveFile) {
+    public void setCallbackConfirmReceiveFile(Callback callbackConfirmReceiveFile) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirmReceiveFile(callbackConfirmReceiveFile);
     }
 
-    public void setCallbackConfirmReceivePrivate(CallbackConfirmReceivePrivate callbackConfirmReceivePrivate) {
+    public void setCallbackConfirmReceivePrivate(Callback callbackConfirmReceivePrivate) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackConfirmReceivePrivate(callbackConfirmReceivePrivate);
     }
 
-    public void setCallbackPrivateMsgReceive(CallbackPrivateMsgReceive callbackPrivateMsgReceive) {
+    public void setCallbackPrivateMsgReceive(Callback callbackPrivateMsgReceive) {
         currentChannel.pipeline().get(ClientHandler.class).setCallbackPrivateMsgReceive(callbackPrivateMsgReceive);
     }
 

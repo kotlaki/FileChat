@@ -1,6 +1,5 @@
 package clientapp.controllers;
 
-import clientapp.callback.Callback;
 import common.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -109,9 +108,9 @@ public class ControllerStorage implements Initializable {
 
         MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
         Controller.linkController.setCallbackConfirmReceiveFile(()->{
-            progressBar.progressProperty().set(1);
-            Thread.sleep(1000);
-            progressBar.progressProperty().setValue(0);
+//            progressBar.progressProperty().set(1);
+//            Thread.sleep(1000);
+//            progressBar.progressProperty().setValue(0);
             refreshFile();
         });
     }
