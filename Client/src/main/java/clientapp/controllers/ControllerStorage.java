@@ -1,6 +1,9 @@
 package clientapp.controllers;
 
-import common.*;
+import common.MyCommandSend;
+import common.MyFileList;
+import common.MyFileReceive;
+import common.MyFileSend;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,8 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ControllerStorage implements Initializable {
     public AnchorPane test;
@@ -37,8 +39,6 @@ public class ControllerStorage implements Initializable {
     public Button btnRemoveFile;
     public Button btnLvlUp;
     public Button btnNewFolder;
-
-
 
 
     public static String msgFromServer;
@@ -107,7 +107,7 @@ public class ControllerStorage implements Initializable {
     public void sendFileToServer() throws IOException, InterruptedException {
 
         MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
-        Controller.linkController.setCallbackConfirmReceiveFile(()->{
+        Controller.linkController.setCallbackConfirmReceiveFile(() -> {
 //            progressBar.progressProperty().set(1);
 //            Thread.sleep(1000);
 //            progressBar.progressProperty().setValue(0);
@@ -137,26 +137,17 @@ public class ControllerStorage implements Initializable {
         // вытаскиваем в ListView данные из List и выводим
         ObservableList<String> files = FXCollections.observableArrayList(MyFileList.listFile("client_storage"));
         listFileClient.setItems(files);
-//        System.out.println("focus id client end = " + listFileClient.getFocusModel().getFocusedIndex());
-        // устанавливаем фокус на первый элемент в списке
-//        listFileClient.getFocusModel().focus(0);
     }
 
     public void refreshListServer() throws IOException {
-        //            IntStream.range(0, strSplit.length)
-//                    .filter(i -> i != 0)
-//                    .map(i -> Integer.parseInt(strSplit[i]))
-//                    .toArray();
-//            System.out.println(Arrays.toString(strSplit));
         Platform.runLater(() -> {
             // сплитим полученный массив
-            String[] strSplit = msgFromServer.split("&&");
             // т.к. у нас первый элемент будет содержать служебную команду /req_list переносим все элементы в новый массив
-            String[] result = new String[strSplit.length - 1];
-            System.arraycopy(strSplit, 1, result, 0, strSplit.length - 1);
-            ObservableList<String> files = FXCollections.observableArrayList(Arrays.asList(result));
+            List<String> result = new ArrayList<>(Arrays.asList(msgFromServer.split("&&")));
+            result.remove(0);
+            ObservableList<String> files = FXCollections.observableArrayList(result);
             listFileServer.setItems(files);
-        });
+    });
     }
 
     public void requestListServer() throws IOException {
@@ -175,7 +166,7 @@ public class ControllerStorage implements Initializable {
         // переносим файл с клиента на сервер
         if (getNameFileToServer != null) {
             MyFileSend.sendFile(Paths.get("client_storage/" + getNameFileToServer), Controller.currentChannel);
-            Controller.linkController.setCallbackConfirmReceiveFile(()-> {
+            Controller.linkController.setCallbackConfirmReceiveFile(() -> {
                 deleteFile();
                 Controller.linkController.setCallbackConfirmDelete(this::refreshFile);
             });
@@ -183,7 +174,7 @@ public class ControllerStorage implements Initializable {
         // переносим файл с сервера на клиента
         if (getNameFileFromServer != null) {
 //            Controller.currentChannel.writeAndFlush(Unpooled.copiedBuffer("/fr " + "server_storage/" + getNameFileFromServer, CharsetUtil.UTF_8));
-           MyCommandSend.sendCommand("/fr " + "server_storage/" + Controller.nick + "/" + getNameFileFromServer, Controller.currentChannel);
+            MyCommandSend.sendCommand("/fr " + "server_storage/" + Controller.nick + "/" + getNameFileFromServer, Controller.currentChannel);
             Controller.linkController.setCallbackReceive(this::deleteFile);
         }
     }
@@ -200,8 +191,8 @@ public class ControllerStorage implements Initializable {
         }
     }
 
-    public void newFolder(ActionEvent actionEvent) {
-        TextField txtNewFolder = new TextField("Введите название тяпки");
+    public void newFolder(ActionEvent actionEvent) throws IOException {
+        TextField txtNewFolder = new TextField("Введите название папки");
         Button createNewFolder = new Button("Создать");
         HBox hBox = new HBox();
         hBox.getChildren().add(txtNewFolder);
@@ -212,7 +203,23 @@ public class ControllerStorage implements Initializable {
         stageNewFolder.setScene(secondScene);
         stageNewFolder.initStyle(StageStyle.UTILITY);
         stageNewFolder.show();
-        nameNewFolder = txtNewFolder.getText();
+        createNewFolder.setOnAction(event -> {
+            // выясняем где мы сейчас
+            if (getNameFileFromServer != null) {
+
+            }
+            if (getNameFileToServer != null) {
+                nameNewFolder = txtNewFolder.getText();
+                try {
+                    Files.createDirectory(Paths.get("client_storage/" + nameNewFolder));
+                    stageNewFolder.close();
+                    refreshListClient();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     public void lvlUp(ActionEvent actionEvent) {
