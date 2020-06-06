@@ -71,7 +71,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 if (message.startsWith("/fr")) {
                     String[] strSplit = str.split(" ");
                     MyFileSend.sendFile(Paths.get(strSplit[1]), ctx.channel());
-                    // ПОДУМАТЬ НА СЧЕТ CALLBACK В ЭТОМ МЕСТЕ???!!!!
                 }
                 // блок обработки запроса и отправки списка файлов клиенту
                 if (message.equals("/req_list")) {
@@ -92,10 +91,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                         MyCommandSend.sendCommand("/respClientList " + clientList(), o.getCtx().channel());
                     }
                 }
-                // блок обработки запроса списка активных пользователей и отправки их клиенту
-//                    if (message.equals("/clientList")) {
-//                        MyCommandSend.sendCommand("/respClientList " + clientList(), ctx.channel());
-//                    }
                 if (message.startsWith("/msgAll")) {
                     currentChannel = this.ctx.channel();
                     String[] strSplit = message.split("&");
@@ -111,11 +106,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                         MyCommandSend.sendCommand("/confReceivePrivate", currentChannel);
                         sendPrivateMsg(strSplit[1], strGetMsg[1]);
                     } else {
-                        // TODO: 29.05.2020 сделать передачу сообщения клиенту
                         System.out.println("Пользователь в данный момент не активен!!!");
                     }
                 }
-
                 System.out.println("From client = " + message);
             }
     }

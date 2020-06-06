@@ -33,7 +33,7 @@ public class Controller extends Application {
     public Hyperlink linkRegistration;
     public boolean isBtnReg = false;
 
-    public ChannelFuture f;     // ???
+    public ChannelFuture f;
     public static Channel currentChannel;
     public static String nick;
     public static String freeText;
@@ -103,6 +103,15 @@ public class Controller extends Application {
         this.pStage = pStage;
     }
 
+    @Override
+    public void stop() throws Exception {
+        // посылаем на сервер команду об отключении пользователя
+        MyCommandSend.sendCommand("/authOFF", Controller.currentChannel);
+        System.out.println(Controller.nick + " послал команду на сервер об отключении...");
+        // закрываем канал
+        Controller.currentChannel.close();
+    }
+
     public void connect() {
         EventLoopGroup work = new NioEventLoopGroup();
         Thread thread = new Thread(() -> {
@@ -134,7 +143,6 @@ public class Controller extends Application {
                 }
             }
         });
-//        thread.setDaemon(true);
         thread.start();
     }
 

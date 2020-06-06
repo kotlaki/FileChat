@@ -83,8 +83,6 @@ public class ControllerChat implements Initializable {
             System.out.println("0 = " + strSplit[0] + " : 1 = " + strSplit[1]);
             MyCommandSend.sendCommand("/pm&" + nickReceiver + "&" + txtMsgSend.getText(), Controller.currentChannel);
             Controller.linkController.setCallbackConfirmReceivePrivate(()->{
-//                txtChat.setStyle("-fx-text-inner-color: red;");
-//                txtChat.setStyle("-fx-text-fill: #00ff00;");
                 txtChat.appendText(txtMsgSend.getText() + "\n");
                 txtMsgSend.clear();
             });
@@ -121,6 +119,5 @@ public class ControllerChat implements Initializable {
             listUser.setItems(clientList);
         });
     }
-
 
 }

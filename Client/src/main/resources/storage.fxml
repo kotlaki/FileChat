@@ -2,56 +2,72 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.ControllerStorage">
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controllers.ControllerStorage">
     <children>
-        <ListView fx:id="listFileClient" layoutX="7.0" layoutY="23.0" prefHeight="344.0" prefWidth="271.0" />
-        <ListView fx:id="listFileServer" focusTraversable="false" layoutX="327.0" layoutY="23.0" prefHeight="344.0" prefWidth="280.0" />
-        <Button fx:id="btnCancelStorage" layoutX="272.0" layoutY="373.0" mnemonicParsing="false" onAction="#cancelStorage" text="Закрыть" />
-        <Button fx:id="btnLeftToRight" layoutX="286.0" layoutY="176.0" mnemonicParsing="false" onAction="#sendFileToServer" prefHeight="33.0" prefWidth="33.0" />
-        <Button fx:id="btnRightToLeft" layoutX="286.0" layoutY="220.0" mnemonicParsing="false" onAction="#receiveFileFromServer" prefHeight="33.0" prefWidth="33.0" />
-        <ProgressBar fx:id="progressBar" layoutX="35.0" layoutY="377.0" prefWidth="200.0" progress="0.0" />
-        <Button fx:id="btnRefreshFile" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" focusTraversable="false" layoutX="286.0" layoutY="44.0" mnemonicParsing="false" onAction="#refreshFile" prefHeight="33.0" prefWidth="33.0" text="Обновить" />
-        <Label layoutX="21.0" layoutY="5.0" prefHeight="17.0" prefWidth="223.0" text="Мои файлы" />
-        <Label layoutX="361.0" layoutY="5.0" prefHeight="17.0" prefWidth="232.0" text="Файлы на сервере" />
-        <Button fx:id="btnDeleteFile" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#deleteFile" prefHeight="33.0" prefWidth="33.0" />
-        <Button fx:id="btnRemoveFile" layoutX="286.0" layoutY="264.0" mnemonicParsing="false" onAction="#removeFile" prefHeight="33.0" prefWidth="33.0" />
-        <Button fx:id="btnNewFolder" alignment="CENTER" focusTraversable="false" layoutX="286.0" layoutY="132.0" mnemonicParsing="false" onAction="#newFolder" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER" />
-        <Button fx:id="btnLvlUp" layoutX="286.0" layoutY="88.0" mnemonicParsing="false" onAction="#lvlUp" prefHeight="33.0" prefWidth="33.0" />
-        <ImageView accessibleRole="BUTTON" disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="287.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
+        <ListView fx:id="listFileClient" layoutX="7.0" layoutY="23.0" prefHeight="344.0" prefWidth="271.0"/>
+        <ListView fx:id="listFileServer" focusTraversable="false" layoutX="327.0" layoutY="23.0" prefHeight="344.0"
+                  prefWidth="280.0"/>
+        <Button fx:id="btnCancelStorage" layoutX="272.0" layoutY="373.0" mnemonicParsing="false"
+                onAction="#cancelStorage" text="Закрыть"/>
+        <Button fx:id="btnLeftToRight" layoutX="286.0" layoutY="176.0" mnemonicParsing="false"
+                onAction="#sendFileToServer" prefHeight="33.0" prefWidth="33.0"/>
+        <Button fx:id="btnRightToLeft" layoutX="286.0" layoutY="220.0" mnemonicParsing="false"
+                onAction="#receiveFileFromServer" prefHeight="33.0" prefWidth="33.0"/>
+<!--        <ProgressBar layoutX="35.0" layoutY="377.0" prefWidth="200.0" progress="0.0"/>-->
+        <Button fx:id="btnRefreshFile" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" focusTraversable="false"
+                layoutX="286.0" layoutY="44.0" mnemonicParsing="false" onAction="#refreshFile" prefHeight="33.0"
+                prefWidth="33.0" text="Обновить"/>
+        <Label layoutX="21.0" layoutY="5.0" prefHeight="17.0" prefWidth="223.0" text="Мои файлы"/>
+        <Label layoutX="361.0" layoutY="5.0" prefHeight="17.0" prefWidth="232.0" text="Файлы на сервере"/>
+        <Button fx:id="btnDeleteFile" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#deleteFile"
+                prefHeight="33.0" prefWidth="33.0"/>
+        <Button fx:id="btnRemoveFile" layoutX="286.0" layoutY="264.0" mnemonicParsing="false" onAction="#removeFile"
+                prefHeight="33.0" prefWidth="33.0"/>
+        <Button alignment="CENTER" focusTraversable="false" layoutX="286.0" layoutY="132.0"
+                mnemonicParsing="false" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER"/>
+        <Button layoutX="286.0" layoutY="88.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="33.0"/>
+        <ImageView accessibleRole="BUTTON" disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="287.0"
+                   layoutY="44.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@icon/refresh.png" />
+                <Image url="@icon/refresh.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="309.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="309.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/deleteFile.png" />
+                <Image url="@icon/deleteFile.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="287.0" layoutY="176.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="287.0" layoutY="176.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/copyFileRight.png" />
+                <Image url="@icon/copyFileRight.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="220.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="220.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/copyFileLeft.png" />
+                <Image url="@icon/copyFileLeft.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="264.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="264.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/remove.png" />
+                <Image url="@icon/remove.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="286.0" layoutY="132.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/newFolder.png" />
+                <Image url="@icon/newFolder.png"/>
             </image>
         </ImageView>
-        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="288.0" layoutY="88.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView disable="true" fitHeight="33.0" fitWidth="33.0" layoutX="288.0" layoutY="88.0" pickOnBounds="true"
+                   preserveRatio="true">
             <image>
-                <Image url="@icon/lvlUp.png" />
+                <Image url="@icon/lvlUp.png"/>
             </image>
         </ImageView>
     </children>
